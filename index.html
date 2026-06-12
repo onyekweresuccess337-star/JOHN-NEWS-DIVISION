@@ -1,0 +1,3113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; img-src 'self' data: https:; connect-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:;">
+<title>JTND v2 — John Tech News Division</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   JTND v2 — DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#09090b;
+  --bg2:#111113;
+  --bg3:#18181b;
+  --bg4:#27272a;
+  --card:rgba(255,255,255,0.045);
+  --card-border:rgba(255,255,255,0.07);
+  --card-border-strong:rgba(255,255,255,0.12);
+  --text:#fafafa;
+  --text2:#a1a1aa;
+  --text3:#71717a;
+  --accent:#e8ff47;
+  --accent-soft:rgba(232,255,71,0.10);
+  --accent-2:#c8e820;
+  --up:#22c55e;
+  --down:#ff4444;
+  --warn:#f97316;
+  --finance:#a855f7;
+  --tech:#3b82f6;
+  --accent-text:#000;
+
+  --font-display:'Playfair Display', Georgia, serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-data:'JetBrains Mono', 'Poppins', monospace;
+
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:12px;
+
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+  --transition: 180ms cubic-bezier(.4,0,.2,1);
+
+  --header-h: 68px;
+  --ticker-h: 32px;
+}
+
+[data-theme="light"]{
+  --bg:#f5f4f1;
+  --bg2:#ffffff;
+  --bg3:#eceae5;
+  --bg4:#e2dfd8;
+  --card:rgba(20,20,25,0.035);
+  --card-border:rgba(20,20,25,0.08);
+  --card-border-strong:rgba(20,20,25,0.16);
+  --text:#1a1d24;
+  --text2:#5b6270;
+  --text3:#8a909c;
+  --accent:#9c8400;
+  --accent-soft:rgba(156,132,0,0.10);
+  --accent-2:#7a6700;
+  --accent-text:#fff;
+  --shadow-card: 0 4px 20px rgba(20,20,25,0.06);
+}
+
+/* Accent overrides */
+[data-accent="lime"]{ --accent:#e8ff47; --accent-2:#c8e820; --accent-soft:rgba(232,255,71,0.10); }
+[data-accent="bronze"]{ --accent:#d4af37; --accent-2:#b08d57; --accent-soft:rgba(212,175,55,0.12); }
+[data-accent="blue"]{ --accent:#5b9bd5; --accent-2:#3b82f6; --accent-soft:rgba(91,155,213,0.12); }
+[data-accent="purple"]{ --accent:#c4a3ff; --accent-2:#a855f7; --accent-soft:rgba(196,163,255,0.12); }
+[data-accent="green"]{ --accent:#7ee8a8; --accent-2:#22c55e; --accent-soft:rgba(126,232,168,0.12); }
+[data-theme="light"][data-accent="lime"]{ --accent:#7a8c00; --accent-2:#5c6900; }
+[data-theme="light"][data-accent="purple"]{ --accent:#7c3aed; --accent-2:#6d28d9; }
+[data-theme="light"][data-accent="green"]{ --accent:#15803d; --accent-2:#166534; }
+
+/* Font family overrides */
+[data-font="poppins"] body{ font-family:'JetBrains Mono', sans-serif; }
+[data-font="poppins"] h1,[data-font="poppins"] h2,[data-font="poppins"] h3,[data-font="poppins"] .display{ font-family:'JetBrains Mono', sans-serif; }
+[data-font="playfair"] body{ font-family:'Playfair Display', serif; }
+
+
+/* Layout density */
+[data-layout="compact"]{ --gap:10px; --pad:12px; }
+[data-layout="standard"]{ --gap:16px; --pad:18px; }
+[data-layout="magazine"]{ --gap:24px; --pad:26px; }
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+}
+
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  font-size:15px;
+  line-height:1.5;
+  min-height:100vh;
+  position:relative;
+}
+
+/* Noise texture overlay for premium tactile feel */
+body::before{
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
+[data-theme="light"] body::before{ opacity:0.15; }
+header.site-header, main, footer, .ai-fab, .ai-panel, .search-overlay, .modal-backdrop, .toast-wrap{ position:relative; z-index:1; }
+
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+img{ max-width:100%; display:block; }
+
+/* Skip link */
+.skip-link{
+  position:absolute; left:-999px; top:0; background:var(--accent); color:var(--accent-text);
+  padding:10px 16px; z-index:1000; border-radius:0 0 8px 0; font-weight:600;
+}
+.skip-link:focus{ left:0; }
+
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+/* Container */
+.container{ max-width:1400px; margin:0 inline auto; margin-inline:auto; padding:0 20px; }
+
+/* ============================================================
+   TICKER TAPE — signature element
+   ============================================================ */
+.ticker-wrap{
+  height:var(--ticker-h);
+  background:var(--bg2);
+  border-bottom:1px solid var(--card-border);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  position:relative;
+}
+.ticker-wrap::before{
+  content:"LIVE";
+  font-family:var(--font-data);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:0.2em;
+  color:#000;
+  background:var(--accent);
+  padding:0 14px;
+  height:100%;
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+  z-index:2;
+  position:relative;
+  text-transform:uppercase;
+}
+.ticker-track{
+  display:flex;
+  gap:0;
+  white-space:nowrap;
+  animation: ticker-scroll 75s linear infinite;
+}
+.ticker-wrap:hover .ticker-track{ animation-play-state: paused; }
+@keyframes ticker-scroll{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
+}
+.ticker-item{
+  font-family:var(--font-body);
+  font-size:11.5px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--text2);
+  padding:0 24px;
+  letter-spacing:0.02em;
+}
+.ticker-item::before{
+  content:"// ";
+  color:var(--accent);
+  font-family:var(--font-data);
+  font-size:9px;
+}
+.ticker-item .sym{ color:var(--text); font-weight:600; font-family:var(--font-data); }
+.ticker-item .chg{ font-family:var(--font-data); }
+.ticker-item .chg.up{ color:var(--up); }
+.ticker-item .chg.down{ color:var(--down); }
+
+/* ============================================================
+   API SETUP BANNER
+   ============================================================ */
+.api-setup{
+  background:linear-gradient(135deg,#0a0f0a,#0d1410);
+  border-bottom:1px solid var(--card-border-strong);
+  padding:18px 20px;
+  display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;
+  position:relative; z-index:250;
+}
+[data-theme="light"] .api-setup{ background:linear-gradient(135deg,#fbfbf5,#f4f6ec); }
+.api-setup.gone{ display:none; }
+.api-setup::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, var(--accent-soft), transparent);
+  pointer-events:none;
+}
+.api-setup-icon{
+  width:40px; height:40px; border-radius:var(--radius-sm); flex-shrink:0;
+  background:var(--accent-soft); border:1px solid var(--card-border-strong);
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+  position:relative;
+}
+.api-setup-body{ flex:1; min-width:240px; position:relative; }
+.api-setup-body h4{
+  font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--accent);
+  margin:0 0 6px; letter-spacing:-0.01em;
+}
+.api-setup-body p{ color:var(--text2); font-size:13px; line-height:1.7; margin:0 0 8px; max-width:680px; }
+.api-setup-body ol{ padding-left:18px; color:var(--text3); font-size:12.5px; line-height:2; margin:0 0 4px; }
+.api-setup-body ol strong{ color:var(--text2); }
+.api-setup-body code{
+  background:rgba(255,255,255,0.06); padding:1px 7px; border-radius:4px;
+  font-family:var(--font-data); font-size:11px; color:var(--accent);
+}
+.key-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center; }
+.key-row input{
+  flex:1; min-width:220px; padding:10px 14px; border-radius:var(--radius-sm);
+  border:1px solid var(--card-border-strong); background:rgba(255,255,255,0.04);
+  color:var(--text); font-family:var(--font-data); font-size:13px; outline:none;
+  transition:border-color var(--transition);
+}
+.key-row input:focus{ border-color:var(--accent); }
+.key-row input::placeholder{ color:var(--text3); font-family:var(--font-body); }
+.btn-save{
+  background:var(--accent); color:var(--accent-text); border:none; padding:10px 20px;
+  border-radius:var(--radius-sm); cursor:pointer; font-family:var(--font-display);
+  font-size:13px; font-weight:700; white-space:nowrap; transition:all var(--transition); letter-spacing:0.02em;
+}
+.btn-save:hover{ background:var(--accent-2); transform:translateY(-1px); }
+.btn-dismiss{
+  background:transparent; color:var(--text3); border:1px solid var(--card-border);
+  padding:10px 14px; border-radius:var(--radius-sm); cursor:pointer; font-size:12px;
+  white-space:nowrap; transition:all var(--transition); flex-shrink:0;
+}
+.btn-dismiss:hover{ border-color:var(--card-border-strong); color:var(--text2); }
+
+/* ============================================================
+   HEADER / NAV
+   ============================================================ */
+header.site-header{
+  position:sticky; top:0; z-index:200;
+  background:rgba(9,9,11,0.85);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid var(--card-border);
+}
+[data-theme="light"] header.site-header{ background:rgba(245,244,241,0.85); }
+
+.nav-row{
+  height:var(--header-h);
+  display:flex; align-items:center; gap:24px;
+  justify-content:space-between;
+}
+.brand{
+  display:flex; align-items:center; gap:12px;
+  font-family:var(--font-display);
+  font-weight:800; font-size:18px;
+  letter-spacing:-0.02em;
+  flex-shrink:0;
+}
+.brand .mark{
+  width:40px; height:40px; border-radius:var(--radius-sm);
+  background:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-weight:800; font-size:15px; color:var(--accent-text);
+  letter-spacing:-1px;
+  flex-shrink:0;
+}
+.brand small{
+  display:block; font-family:var(--font-data); font-weight:500; font-size:9.5px;
+  letter-spacing:0.22em; color:var(--text3); margin-top:3px; text-transform:uppercase;
+}
+
+nav.main-nav{
+  display:flex; gap:2px; flex:1; overflow-x:auto; scrollbar-width:none;
+}
+nav.main-nav::-webkit-scrollbar{ display:none; }
+nav.main-nav button{
+  background:none; border:none; color:var(--text3);
+  font-family:var(--font-data);
+  font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+  padding:8px 12px; border-radius:var(--radius-sm);
+  white-space:nowrap; transition:color var(--transition), background var(--transition);
+  position:relative;
+}
+nav.main-nav button:hover{ color:var(--text); }
+nav.main-nav button.active{ color:var(--accent); }
+nav.main-nav button.active::after{
+  content:""; position:absolute; left:12px; right:12px; bottom:-1px; height:2px;
+  background:var(--accent); border-radius:2px;
+}
+
+.nav-actions{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.icon-btn{
+  width:36px; height:36px; border-radius:var(--radius-sm);
+  background:var(--card); border:1px solid var(--card-border); color:var(--text);
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+.icon-btn:hover{ background:var(--accent-soft); border-color:var(--card-border-strong); }
+.icon-btn:active{ transform:scale(0.94); }
+
+.btn{
+  padding:9px 18px; border-radius:var(--radius-sm); border:1px solid var(--accent);
+  background:var(--accent); color:var(--accent-text); font-weight:700; font-size:13px;
+  font-family:var(--font-display); letter-spacing:0.01em;
+  transition: filter var(--transition), transform var(--transition);
+}
+.btn:hover{ background:var(--accent-2); transform:translateY(-1px); }
+.btn:active{ transform:scale(0.97); }
+.btn.ghost{ background:transparent; color:var(--text2); border-color:var(--card-border); font-family:inherit; font-weight:500; }
+.btn.ghost:hover{ background:var(--card); border-color:var(--card-border-strong); color:var(--text); }
+.btn.sm{ padding:6px 12px; font-size:12px; }
+.btn.danger{ background:var(--down); border-color:var(--down); color:#000; }
+
+.nav-toggle{ display:none; }
+
+/* Live pill (blinking dot) */
+.live-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(255,68,68,0.1); color:var(--down);
+  font-size:9px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase;
+  padding:3px 10px; border-radius:20px; border:1px solid rgba(255,68,68,0.2);
+  font-family:var(--font-data);
+}
+.live-pill::before{ content:""; width:5px; height:5px; border-radius:50%; background:var(--down); animation:blink 1s infinite; }
+@keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+/* Mobile nav drawer */
+@media (max-width: 980px){
+  nav.main-nav{
+    position:fixed; top:calc(var(--header-h) + var(--ticker-h)); left:0; right:0; bottom:0;
+    background:var(--bg2); flex-direction:column; padding:12px;
+    transform:translateX(-100%); transition:transform var(--transition);
+    z-index:199; overflow-y:auto;
+  }
+  nav.main-nav.open{ transform:translateX(0); }
+  nav.main-nav button{ text-align:left; padding:14px 16px; font-size:15px; border-bottom:1px solid var(--card-border); border-radius:0; }
+  nav.main-nav button.active::after{ display:none; }
+  nav.main-nav button.active{ background:var(--accent-soft); }
+  .nav-toggle{ display:flex; }
+  .brand small{ display:none; }
+  .live-pill{ display:none; }
+}
+
+/* ============================================================
+   COMMON LAYOUT
+   ============================================================ */
+main{ padding:24px 0 80px; }
+.section{ display:none; animation:fadein 320ms ease; }
+.section.active{ display:block; }
+@keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+.section-head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+  margin-bottom:18px; flex-wrap:wrap;
+}
+.section-head h2{
+  font-family:var(--font-display); font-size:clamp(22px,3vw,32px); font-weight:700; margin:0;
+  display:flex; align-items:center; gap:10px;
+}
+.section-head .eyebrow{
+  font-family:var(--font-data); font-size:11px; letter-spacing:0.18em; color:var(--accent);
+  font-weight:600; text-transform:uppercase; display:block; margin-bottom:4px;
+}
+.section-head p.lead{ color:var(--text2); font-size:13.5px; margin:4px 0 0; max-width:560px; }
+
+.grid{ display:grid; gap:var(--gap, 16px); }
+.grid.cols-2{ grid-template-columns:repeat(2,1fr); }
+.grid.cols-3{ grid-template-columns:repeat(3,1fr); }
+.grid.cols-4{ grid-template-columns:repeat(4,1fr); }
+.grid.cols-6{ grid-template-columns:repeat(6,1fr); }
+@media (max-width:1100px){ .grid.cols-4{ grid-template-columns:repeat(2,1fr); } .grid.cols-6{ grid-template-columns:repeat(3,1fr);} .grid.cols-3{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:680px){ .grid.cols-2,.grid.cols-3,.grid.cols-4,.grid.cols-6{ grid-template-columns:1fr; } }
+
+/* Card */
+.card{
+  background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius-md);
+  padding:var(--pad, 18px); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  box-shadow:var(--shadow-card);
+}
+
+/* Article card */
+.article{
+  display:flex; flex-direction:column; gap:10px; height:100%;
+}
+.article-img{
+  width:100%; height:180px; object-fit:cover; border-radius:var(--radius-sm);
+  display:block; background:var(--bg3);
+}
+.article-img-wrap{
+  position:relative; width:100%; height:180px; border-radius:var(--radius-sm); overflow:hidden;
+  background:var(--bg3); flex-shrink:0;
+}
+.article-img-wrap img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform 320ms ease;
+}
+.article:hover .article-img-wrap img{ transform:scale(1.03); }
+.article-img-placeholder{
+  width:100%; height:180px; border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,var(--bg3),var(--bg4));
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; color:var(--text3); flex-shrink:0;
+}
+/* News refresh countdown badge */
+.news-refresh-badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-family:var(--font-data); color:var(--text3);
+  letter-spacing:0.06em;
+}
+.news-refresh-badge .spin{
+  display:inline-block; width:8px; height:8px; border:1.5px solid var(--accent);
+  border-top-color:transparent; border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.article .meta{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  font-family:var(--font-data); font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em;
+}
+.article .meta .cat{
+  background:var(--accent-soft); color:var(--accent); padding:2px 8px; border-radius:4px; font-weight:700;
+  font-family:var(--font-data); letter-spacing:0.08em; text-transform:uppercase; font-size:10px;
+}
+.article h3{ font-family:var(--font-display); font-size:18px; line-height:1.3; margin:0; font-weight:700; cursor:pointer; transition:color var(--transition); }
+.article h3:hover{ color:var(--accent); }
+.hero-main h1{ cursor:default; }
+.article p{ color:var(--text2); font-size:13.5px; margin:0; flex:1; }
+.article-foot{
+  display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:8px;
+  border-top:1px solid var(--card-border);
+}
+.article-foot .src{ font-size:12px; color:var(--text3); font-weight:600; }
+.article-actions{ display:flex; gap:6px; }
+.article-actions button{
+  background:none; border:none; color:var(--text3); font-size:15px; padding:4px;
+  border-radius:4px; transition:color var(--transition), background var(--transition);
+}
+.article-actions button:hover{ color:var(--accent); background:var(--card); }
+.article-actions button.bookmarked{ color:var(--accent); }
+
+.ai-summary{
+  background:var(--bg3); border-radius:var(--radius-sm); padding:10px 12px; font-size:12.5px;
+  border:1px solid var(--card-border); border-left:2px solid var(--accent); color:var(--text2);
+}
+.ai-summary b{ font-family:var(--font-data); letter-spacing:0.06em; font-size:11px; color:var(--accent); }
+
+/* Hero */
+.hero{
+  display:grid; grid-template-columns:1.6fr 1fr; gap:var(--gap,16px); margin-bottom:24px;
+}
+@media (max-width:900px){ .hero{ grid-template-columns:1fr; } }
+.hero-main{
+  border-radius:var(--radius-lg); overflow:hidden; position:relative; min-height:380px;
+  display:flex; align-items:flex-end; background:linear-gradient(135deg, var(--bg3), var(--bg2));
+  border:1px solid var(--card-border);
+}
+.hero-main::before{
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, var(--accent-soft), transparent 60%);
+}
+.hero-main .hero-content{ position:relative; padding:32px; z-index:1; }
+.hero-main .meta .cat{ background:var(--down); color:#fff; }
+.hero-main h1{ font-family:var(--font-display); font-size:clamp(26px,4vw,42px); line-height:1.15; margin:10px 0; font-weight:800; }
+.hero-main p{ color:var(--text2); max-width:520px; font-size:14.5px; }
+
+.hero-side{ display:flex; flex-direction:column; gap:12px; }
+.hero-side .card{ flex:1; display:flex; flex-direction:column; gap:10px; }
+.hero-side h4{ font-family:var(--font-display); font-size:14px; margin:0; line-height:1.35; font-weight:700; }
+.trend-row{ display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--card-border); }
+.trend-row:last-child{ border-bottom:none; padding-bottom:0; }
+.trend-row .num{ font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--accent); width:28px; flex-shrink:0; }
+
+/* Stat / market cards */
+.stat-card{ display:flex; flex-direction:column; gap:6px; }
+.stat-card .label{ font-family:var(--font-data); font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; }
+.stat-card .value{ font-family:var(--font-data); font-size:24px; font-weight:700; }
+.stat-card .change{ font-family:var(--font-data); font-size:13px; font-weight:600; display:flex; align-items:center; gap:4px; }
+.change.up{ color:var(--up); }
+.change.down{ color:var(--down); }
+.sparkline{ width:100%; height:36px; margin-top:4px; }
+
+/* Table */
+.table-wrap{ overflow-x:auto; }
+table.data-table{ width:100%; border-collapse:collapse; font-family:var(--font-data); font-size:13px; min-width:560px; }
+table.data-table th{
+  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text3);
+  padding:10px 12px; border-bottom:1px solid var(--card-border); font-weight:600;
+}
+table.data-table td{ padding:12px; border-bottom:1px solid var(--card-border); }
+table.data-table tr:last-child td{ border-bottom:none; }
+table.data-table tr:hover td{ background:var(--card); }
+.asset-name{ display:flex; align-items:center; gap:10px; font-family:var(--font-body); }
+.asset-icon{
+  width:30px; height:30px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0;
+}
+.asset-name .sym{ color:var(--text3); font-size:11.5px; display:block; }
+.watch-btn{ background:none; border:1px solid var(--card-border); border-radius:6px; color:var(--text2); width:28px; height:28px; font-size:13px; }
+.watch-btn.active{ color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+
+/* Tabs */
+.tabs{ display:flex; gap:4px; flex-wrap:wrap; }
+.tabs button{
+  background:var(--card); border:1px solid var(--card-border); color:var(--text2);
+  padding:7px 14px; border-radius:var(--radius-sm); font-size:11px; font-weight:700;
+  font-family:var(--font-data); letter-spacing:0.08em; text-transform:uppercase;
+  transition:all var(--transition);
+}
+.tabs button:hover{ border-color:var(--card-border-strong); color:var(--text); }
+.tabs button.active{ background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+
+/* Forms */
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:600; color:var(--text2); }
+.field input, .field select, .field textarea{
+  background:var(--bg3); border:1px solid var(--card-border); border-radius:var(--radius-sm);
+  color:var(--text); padding:10px 12px; font-size:14px; font-family:inherit; width:100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ border-color:var(--accent); }
+.row-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:520px){ .row-2{ grid-template-columns:1fr; } }
+
+.status-pill{
+  display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700;
+  padding:5px 12px; border-radius:20px; font-family:var(--font-data);
+  letter-spacing:0.06em; text-transform:uppercase;
+}
+.status-pill.connected{ background:rgba(34,197,94,0.1); color:var(--up); border:1px solid rgba(34,197,94,0.2); }
+.status-pill.disconnected{ background:rgba(255,255,255,0.05); color:var(--text3); border:1px solid var(--card-border); }
+.status-pill.invalid{ background:rgba(255,68,68,0.1); color:var(--down); border:1px solid rgba(255,68,68,0.2); }
+.status-pill .dot{ width:7px; height:7px; border-radius:50%; background:currentColor; }
+
+/* Currency strength meter */
+.strength-meter{ height:6px; border-radius:3px; background:var(--bg3); overflow:hidden; margin-top:6px; }
+.strength-meter > div{ height:100%; background:linear-gradient(90deg, var(--down), var(--warn), var(--up)); border-radius:3px; }
+
+/* World map */
+.map-wrap{ position:relative; border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--card-border); background:var(--bg3); }
+.map-controls{ position:absolute; top:14px; right:14px; display:flex; flex-direction:column; gap:6px; z-index:5; }
+.map-svg{ width:100%; height:auto; display:block; }
+.map-svg path.country{ fill:var(--bg2); stroke:var(--card-border); stroke-width:0.5; transition:fill var(--transition); cursor:pointer; }
+.map-svg path.country:hover, .map-svg path.country:focus{ fill:var(--accent-soft); outline:none; }
+.map-svg path.country.has-news{ fill:rgba(176,141,87,0.22); }
+.news-pin{ cursor:pointer; }
+.legend{ display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--text2); margin-top:12px; }
+.legend span{ display:inline-flex; align-items:center; gap:6px; }
+.legend i{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+/* Floating AI assistant */
+.ai-fab{
+  position:fixed; bottom:22px; right:22px; z-index:300;
+  width:56px; height:56px; border-radius:50%; border:none;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  color:var(--accent-text); font-size:24px; box-shadow:0 8px 28px rgba(0,0,0,0.35);
+  display:flex; align-items:center; justify-content:center;
+}
+.ai-fab:active{ transform:scale(0.94); }
+
+.ai-panel{
+  position:fixed; bottom:90px; right:22px; width:min(380px, calc(100vw - 32px)); max-height:min(560px, calc(100vh - 140px));
+  background:var(--bg2); border:1px solid var(--card-border); border-radius:var(--radius-lg);
+  box-shadow:0 12px 40px rgba(0,0,0,0.4); z-index:300; display:none; flex-direction:column; overflow:hidden;
+}
+.ai-panel.open{ display:flex; }
+.ai-panel-head{ padding:14px 16px; border-bottom:1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; }
+.ai-panel-head h3{ margin:0; font-family:var(--font-display); font-size:16px; }
+.ai-messages{ flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+.ai-msg{ font-size:13.5px; padding:10px 12px; border-radius:var(--radius-md); max-width:88%; line-height:1.45; }
+.ai-msg.bot{ background:var(--card); border:1px solid var(--card-border); align-self:flex-start; }
+.ai-msg.user{ background:var(--accent-soft); color:var(--text); align-self:flex-end; }
+.ai-input-row{ padding:10px; border-top:1px solid var(--card-border); display:flex; gap:8px; }
+.ai-input-row input{ flex:1; background:var(--bg3); border:1px solid var(--card-border); border-radius:20px; padding:10px 14px; color:var(--text); font-size:13px; }
+.ai-suggestions{ display:flex; gap:6px; flex-wrap:wrap; padding:0 16px 10px; }
+.ai-suggestions button{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; font-size:11.5px; padding:5px 10px; color:var(--text2); }
+
+/* Search overlay */
+.search-overlay{
+  position:fixed; inset:0; background:rgba(10,12,16,0.7); backdrop-filter:blur(4px);
+  z-index:400; display:none; align-items:flex-start; justify-content:center; padding-top:10vh;
+}
+.search-overlay.open{ display:flex; }
+.search-box{ width:min(640px, calc(100vw - 32px)); background:var(--bg2); border:1px solid var(--card-border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+.search-box input{ width:100%; border:none; background:transparent; padding:20px 22px; font-size:18px; color:var(--text); font-family:var(--font-display); }
+.search-box input:focus{ outline:none; }
+.search-results{ max-height:50vh; overflow-y:auto; border-top:1px solid var(--card-border); }
+.search-result{ padding:12px 22px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--card-border); font-size:13.5px; }
+.search-result:hover{ background:var(--card); cursor:pointer; }
+.search-result .tag{ font-size:10px; color:var(--accent); text-transform:uppercase; letter-spacing:0.08em; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(10,12,16,0.6); backdrop-filter:blur(3px); z-index:500; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--bg2); border:1px solid var(--card-border); border-radius:var(--radius-lg); width:min(440px,100%); max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+.modal-head{ padding:18px 20px; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center; }
+.modal-head h3{ margin:0; font-family:var(--font-display); font-size:18px; }
+.modal-body{ padding:20px; display:flex; flex-direction:column; gap:14px; }
+
+/* Toast */
+.toast-wrap{ position:fixed; top:calc(var(--header-h) + var(--ticker-h) + 12px); right:16px; z-index:600; display:flex; flex-direction:column; gap:8px; }
+.toast{
+  background:var(--bg2); border:1px solid var(--card-border); border-left:3px solid var(--accent); border-radius:var(--radius-sm);
+  padding:12px 16px; font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,0.3); animation:slidein 220ms ease;
+  max-width:320px;
+}
+.toast.success{ border-left-color:var(--up); }
+.toast.error{ border-left-color:var(--down); }
+@keyframes slidein{ from{opacity:0; transform:translateX(20px);} to{opacity:1; transform:translateX(0);} }
+
+/* Currency converter */
+.converter{ display:flex; flex-direction:column; gap:12px; }
+.converter .swap-btn{ align-self:center; }
+.converter .result{ font-family:var(--font-data); font-size:28px; font-weight:700; text-align:center; padding:14px; background:var(--bg3); border-radius:var(--radius-md); }
+
+/* Footer */
+footer{ border-top:1px solid var(--card-border); padding:32px 0; margin-top:40px; color:var(--text3); font-size:12.5px; }
+footer .foot-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+.brand-foot{ font-family:var(--font-display); font-weight:700; color:var(--text2); font-size:15px; }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:48px 20px; color:var(--text3); }
+.empty-state .icon{ font-size:36px; margin-bottom:10px; }
+.empty-state h4{ font-family:var(--font-display); color:var(--text2); margin:0 0 6px; }
+
+/* Login */
+.auth-grid{ display:grid; place-items:center; min-height:50vh; }
+.auth-card{ width:min(380px,100%); }
+.auth-providers{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+.auth-providers .btn{ display:flex; align-items:center; justify-content:center; gap:10px; }
+.divider{ display:flex; align-items:center; gap:10px; color:var(--text3); font-size:11px; text-transform:uppercase; letter-spacing:0.1em; margin:14px 0; }
+.divider::before,.divider::after{ content:""; flex:1; height:1px; background:var(--card-border); }
+
+/* Customization swatches */
+.swatch-row{ display:flex; gap:10px; flex-wrap:wrap; }
+.swatch{ width:40px; height:40px; border-radius:50%; border:2px solid transparent; cursor:pointer; position:relative; }
+.swatch.active{ border-color:var(--text); }
+.swatch.active::after{ content:"✓"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; text-shadow:0 1px 2px rgba(0,0,0,0.5); }
+
+/* Utility */
+.flex{ display:flex; align-items:center; }
+.gap-8{ gap:8px; } .gap-12{ gap:12px; }
+.mt-12{ margin-top:12px; } .mb-12{ margin-bottom:12px; }
+.text-up{ color:var(--up); } .text-down{ color:var(--down); }
+.muted{ color:var(--text2); font-size:13px; }
+.clamp-typo{ font-size:clamp(13px,1.4vw,15px); }
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+</style>
+</head>
+<body data-theme="dark" data-accent="lime" data-layout="standard" data-font="inter">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<!-- API SETUP BANNER -->
+<div class="api-setup" id="apiSetupBanner">
+  <div class="api-setup-icon" aria-hidden="true">⚡</div>
+  <div class="api-setup-body">
+    <h4>Connect Live News — NewsData.io</h4>
+    <p>JTND runs on curated offline data by default. Add a free <code>NewsData.io</code> API key to pull live, continuously-updated headlines across technology, finance, crypto and global business.</p>
+    <ol>
+      <li>Create a free account at <strong>newsdata.io</strong></li>
+      <li>Copy your API key from the dashboard (starts with <code>pub_</code>)</li>
+      <li>Paste it below and press <strong>Connect</strong></li>
+    </ol>
+    <div class="key-row">
+      <label for="newsApiKey" class="sr-only">NewsData.io API Key</label>
+      <input type="password" id="newsApiKey" placeholder="pub_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <button class="btn-save" id="saveApiKeyBtn">Connect</button>
+      <button class="btn ghost sm" id="testApiKeyBtn">Test</button>
+      <button class="btn-dismiss" id="removeApiKeyBtn">Remove key</button>
+      <span class="status-pill disconnected" id="apiStatusPill"><span class="dot"></span> Not connected — offline data active</span>
+    </div>
+  </div>
+  <button class="btn-dismiss" id="dismissApiSetup" aria-label="Dismiss this banner">Dismiss ✕</button>
+</div>
+
+<header class="site-header">
+  <div class="ticker-wrap" aria-label="Live market ticker" role="marquee">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+  <div class="container nav-row">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">JT</span>
+      <span>JTND<small>JOHN TECH NEWS DIVISION</small></span>
+    </div>
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+      <button data-route="home" class="active">Home</button>
+      <button data-route="breaking">Breaking News</button>
+      <button data-route="markets">Markets</button>
+      <button data-route="stocks">Stocks</button>
+      <button data-route="crypto">Crypto</button>
+      <button data-route="currency">Currency</button>
+      <button data-route="ai-tech">AI &amp; Tech</button>
+      <button data-route="business">Business</button>
+      <button data-route="worldmap">World Map</button>
+      <button data-route="watchlist">Watchlist</button>
+      <button data-route="bookmarks">Bookmarks</button>
+      <button data-route="settings">Settings</button>
+      <button data-route="login">Login</button>
+    </nav>
+    <div class="nav-actions">
+      <span class="live-pill" aria-hidden="true">Live</span>
+      <button class="icon-btn" id="searchBtn" aria-label="Search (press slash)" title="Search">🔍</button>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+      <button class="icon-btn nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content" class="container">
+
+  <!-- ================= HOME ================= -->
+  <section class="section active" id="route-home" aria-labelledby="home-title">
+    <div class="hero">
+      <article class="hero-main" id="heroMain"></article>
+      <div class="hero-side">
+        <div class="card">
+          <span class="eyebrow">Trending Now</span>
+          <div id="trendingList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Markets at a Glance</span>
+        <h2 id="home-title">Global Snapshot</h2>
+      </div>
+      <button class="btn ghost sm" data-route-link="markets">View all markets →</button>
+    </div>
+    <div class="grid cols-4 mb-12" id="homeIndexes"></div>
+
+    <div class="section-head">
+      <div><span class="eyebrow">Editor's Picks</span><h2>Latest Headlines</h2></div>
+      <button class="btn ghost sm" data-route-link="breaking">More breaking news →</button>
+    </div>
+    <div class="grid cols-3" id="homeHeadlines"></div>
+  </section>
+
+  <!-- ================= BREAKING NEWS ================= -->
+  <section class="section" id="route-breaking" aria-labelledby="breaking-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Updated continuously</span><h2 id="breaking-title">Breaking News</h2>
+      <p class="lead">Top developing stories across technology, finance and global business — with AI-generated summaries.</p></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="news-refresh-badge"><span class="spin"></span> <span id="newsCountdownBadge">Auto-refresh: 30s</span></span>
+        <button class="btn ghost sm" id="manualRefreshNews">↻ Refresh Now</button>
+      </div>
+    </div>
+
+    <div class="card mb-12" id="breakingApiRef" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>
+        <span class="eyebrow">News Source</span>
+        <p class="muted" style="margin:4px 0 0;">Showing offline curated headlines. Connect NewsData.io at the top of the page for live updates.</p>
+      </div>
+      <span class="status-pill disconnected" id="apiStatusPillRef"><span class="dot"></span> Offline data</span>
+    </div>
+
+    <div class="grid cols-3" id="breakingGrid"></div>
+  </section>
+
+  <!-- ================= MARKETS ================= -->
+  <section class="section" id="route-markets" aria-labelledby="markets-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Global Indexes</span><h2 id="markets-title">Markets Overview <span id="marketsLiveBadge"></span></h2>
+      <p class="lead">Real-time snapshot of major world indexes and sentiment.</p></div>
+    </div>
+    <div class="grid cols-4 mb-12" id="marketsIndexes"></div>
+
+    <div class="grid cols-3">
+      <div class="card">
+        <span class="eyebrow">Top Gainers</span>
+        <h2 style="font-size:18px;margin:6px 0 12px;">Top Gainers</h2>
+        <div id="topGainers"></div>
+      </div>
+      <div class="card">
+        <span class="eyebrow">Top Losers</span>
+        <h2 style="font-size:18px;margin:6px 0 12px;">Top Losers</h2>
+        <div id="topLosers"></div>
+      </div>
+      <div class="card">
+        <span class="eyebrow">Most Active</span>
+        <h2 style="font-size:18px;margin:6px 0 12px;">Most Active</h2>
+        <div id="mostActive"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STOCKS ================= -->
+  <section class="section" id="route-stocks" aria-labelledby="stocks-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Equities Desk</span><h2 id="stocks-title">Stock Tracker <span id="stocksLiveBadge"></span></h2>
+      <p class="lead">Track major technology and blue-chip stocks with live-style pricing.</p></div>
+      <div class="tabs" id="stockRangeTabs">
+        <button class="active" data-range="1D">1D</button>
+        <button data-range="1W">1W</button>
+        <button data-range="1M">1M</button>
+        <button data-range="6M">6M</button>
+        <button data-range="1Y">1Y</button>
+        <button data-range="5Y">5Y</button>
+      </div>
+    </div>
+
+    <div class="card mb-12">
+      <span class="eyebrow">Alpha Vantage API (optional)</span>
+      <h2 style="margin:6px 0 4px;font-size:20px;">Enhanced Stock Data Source</h2>
+      <p class="lead">JTND uses free Stooq data by default. Add an Alpha Vantage key for higher-fidelity quotes where supported.</p>
+      <div class="row-2 mt-12">
+        <div class="field">
+          <label for="stockApiKey">Alpha Vantage API Key</label>
+          <input type="password" id="stockApiKey" placeholder="Your Alpha Vantage key" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <div class="flex gap-8">
+            <button class="btn" id="saveStockApiKeyBtn">Save Key</button>
+            <button class="btn ghost" id="testStockApiKeyBtn">Test Connection</button>
+            <button class="btn ghost" id="removeStockApiKeyBtn">Remove</button>
+          </div>
+        </div>
+      </div>
+      <div class="mt-12"><span class="status-pill disconnected" id="stockApiStatusPill"><span class="dot"></span> Not configured — using Stooq / offline data</span></div>
+    </div>
+    <div class="card table-wrap">
+      <table class="data-table" id="stocksTable">
+        <thead><tr><th>Asset</th><th>Price</th><th>Change</th><th>% Change</th><th>Volume</th><th>Market Cap</th><th>Trend</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= CRYPTO ================= -->
+  <section class="section" id="route-crypto" aria-labelledby="crypto-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Live via CoinGecko</span><h2 id="crypto-title">Cryptocurrency Center <span id="cryptoLiveBadge"></span></h2>
+      <p class="lead">Live prices, market caps and AI-generated trend insights for major digital assets.</p></div>
+      <button class="btn ghost sm" id="refreshCrypto">↻ Refresh</button>
+    </div>
+    <div class="card table-wrap mb-12">
+      <table class="data-table" id="cryptoTable">
+        <thead><tr><th>Asset</th><th>Price</th><th>24h %</th><th>Market Cap</th><th>Volume (24h)</th><th>Trend</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <span class="eyebrow">AI Market Insight</span>
+      <p id="cryptoInsight" class="muted" style="font-size:14px;"></p>
+    </div>
+  </section>
+
+  <!-- ================= CURRENCY ================= -->
+  <section class="section" id="route-currency" aria-labelledby="currency-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Live via ExchangeRate API</span><h2 id="currency-title">Currency Center <span id="currencyLiveBadge"></span></h2>
+      <p class="lead">Track Naira exchange rates and convert between major currencies.</p></div>
+      <button class="btn ghost sm" id="refreshCurrency">↻ Refresh</button>
+    </div>
+    <div class="grid cols-3" style="align-items:start;">
+      <div class="card" style="grid-column:span 2;">
+        <div class="table-wrap">
+          <table class="data-table" id="currencyTable">
+            <thead><tr><th>Pair</th><th>Rate</th><th>Daily Change</th><th>Weekly Change</th><th>Strength</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <span class="eyebrow">Currency Converter</span>
+        <h2 style="font-size:18px;margin:6px 0 12px;">Convert</h2>
+        <div class="converter">
+          <div class="field">
+            <label for="convFrom">From</label>
+            <select id="convFrom"></select>
+          </div>
+          <div class="field">
+            <label for="convAmount">Amount</label>
+            <input type="number" id="convAmount" value="1" min="0" step="any" />
+          </div>
+          <button class="icon-btn swap-btn" id="convSwap" aria-label="Swap currencies">⇅</button>
+          <div class="field">
+            <label for="convTo">To</label>
+            <select id="convTo"></select>
+          </div>
+          <div class="result" id="convResult">—</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AI & TECH ================= -->
+  <section class="section" id="route-ai-tech" aria-labelledby="aitech-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Innovation Desk</span><h2 id="aitech-title">AI &amp; Technology</h2>
+      <p class="lead">The latest in artificial intelligence, cybersecurity, software, robotics, gadgets and space tech.</p></div>
+    </div>
+    <div class="tabs mb-12" id="aiTechFilters">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="Artificial Intelligence">Artificial Intelligence</button>
+      <button data-filter="Cybersecurity">Cybersecurity</button>
+      <button data-filter="Software">Software</button>
+      <button data-filter="Robotics">Robotics</button>
+      <button data-filter="Gadgets">Gadgets</button>
+      <button data-filter="Space Technology">Space Technology</button>
+    </div>
+    <div class="grid cols-3" id="aiTechGrid"></div>
+  </section>
+
+  <!-- ================= BUSINESS ================= -->
+  <section class="section" id="route-business" aria-labelledby="business-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Global Business</span><h2 id="business-title">Business News</h2>
+      <p class="lead">Startups, economy, investment and corporate news from around the world.</p></div>
+    </div>
+    <div class="tabs mb-12" id="businessFilters">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="Finance">Finance</button>
+      <button data-filter="AI">AI</button>
+      <button data-filter="Crypto">Crypto</button>
+      <button data-filter="Technology">Technology</button>
+      <button data-filter="Business">Business</button>
+    </div>
+    <div class="grid cols-3" id="businessGrid"></div>
+  </section>
+
+  <!-- ================= WORLD MAP ================= -->
+  <section class="section" id="route-worldmap" aria-labelledby="worldmap-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Signature Feature</span><h2 id="worldmap-title">World News Map</h2>
+      <p class="lead">Click a region to see what's happening there right now.</p></div>
+      <div class="field" style="min-width:220px;">
+        <input type="search" id="mapSearch" placeholder="Search a country…" aria-label="Search country" />
+      </div>
+    </div>
+    <div class="grid cols-3" style="align-items:start;">
+      <div class="map-wrap" style="grid-column:span 2;">
+        <div class="map-controls">
+          <button class="icon-btn" id="mapZoomIn" aria-label="Zoom in">+</button>
+          <button class="icon-btn" id="mapZoomOut" aria-label="Zoom out">−</button>
+          <button class="icon-btn" id="mapReset" aria-label="Reset zoom">⟲</button>
+        </div>
+        <svg class="map-svg" id="worldMap" viewBox="0 0 1000 500" role="img" aria-label="Interactive world map with news indicators"></svg>
+        <div class="container">
+          <div class="legend">
+            <span><i style="background:var(--down)"></i> Breaking News</span>
+            <span><i style="background:var(--warn)"></i> Developing Story</span>
+            <span><i style="background:var(--up)"></i> Positive News</span>
+            <span><i style="background:#5b9bd5"></i> Technology News</span>
+            <span><i style="background:#a78bfa"></i> Finance News</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="mapDetailCard">
+        <span class="eyebrow">Region Detail</span>
+        <h2 style="font-size:18px;margin:6px 0;">Select a country</h2>
+        <p class="muted">Click any highlighted country on the map to view headlines, summaries and related stories.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WATCHLIST ================= -->
+  <section class="section" id="route-watchlist" aria-labelledby="watchlist-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Personal</span><h2 id="watchlist-title">Watchlist</h2>
+      <p class="lead">Assets you're tracking. Add stocks, crypto and currencies from their respective sections.</p></div>
+    </div>
+    <div class="card table-wrap">
+      <table class="data-table" id="watchlistTable">
+        <thead><tr><th>Asset</th><th>Type</th><th>Price</th><th>Change</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty-state" id="watchlistEmpty" hidden>
+        <div class="icon">⭐</div>
+        <h4>Your watchlist is empty</h4>
+        <p>Tap the star icon on any stock, crypto or currency to add it here.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BOOKMARKS ================= -->
+  <section class="section" id="route-bookmarks" aria-labelledby="bookmarks-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Saved for later</span><h2 id="bookmarks-title">Bookmarks</h2>
+      <p class="lead">Articles you've saved for offline reading.</p></div>
+      <button class="btn ghost sm" id="clearBookmarks">Clear all</button>
+    </div>
+    <div class="grid cols-3" id="bookmarksGrid"></div>
+    <div class="empty-state" id="bookmarksEmpty" hidden>
+      <div class="icon">🔖</div>
+      <h4>No bookmarks yet</h4>
+      <p>Tap the bookmark icon on any article to save it here.</p>
+    </div>
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <section class="section" id="route-settings" aria-labelledby="settings-title">
+    <div class="section-head">
+      <div><span class="eyebrow">Personalize</span><h2 id="settings-title">Website Customization</h2>
+      <p class="lead">Tune JTND's appearance and content to your taste. Saved automatically on this device.</p></div>
+    </div>
+    <div class="grid cols-2">
+      <div class="card">
+        <span class="eyebrow">Appearance</span>
+        <h2 style="font-size:18px;margin:6px 0 14px;">Theme</h2>
+        <div class="tabs" id="themeTabs">
+          <button data-theme-opt="dark" class="active">Dark</button>
+          <button data-theme-opt="light">Light</button>
+          <button data-theme-opt="system">System</button>
+        </div>
+
+        <h2 style="font-size:18px;margin:18px 0 10px;">Accent Color</h2>
+        <div class="swatch-row" id="accentSwatches">
+          <button class="swatch active" data-accent="lime" style="background:#e8ff47" aria-label="Lime accent"></button>
+          <button class="swatch" data-accent="bronze" style="background:#d4af37" aria-label="Bronze accent"></button>
+          <button class="swatch" data-accent="blue" style="background:#5b9bd5" aria-label="Blue accent"></button>
+          <button class="swatch" data-accent="purple" style="background:#c4a3ff" aria-label="Purple accent"></button>
+          <button class="swatch" data-accent="green" style="background:#7ee8a8" aria-label="Green accent"></button>
+        </div>
+
+        <h2 style="font-size:18px;margin:18px 0 10px;">Layout Mode</h2>
+        <div class="tabs" id="layoutTabs">
+          <button data-layout-opt="compact">Compact</button>
+          <button data-layout-opt="standard" class="active">Standard</button>
+          <button data-layout-opt="magazine">Magazine</button>
+        </div>
+
+        <h2 style="font-size:18px;margin:18px 0 10px;">Font</h2>
+        <div class="tabs" id="fontTabs">
+          <button data-font-opt="inter" class="active">Inter</button>
+          <button data-font-opt="poppins">Poppins</button>
+          <button data-font-opt="playfair">Playfair Display</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="eyebrow">Content</span>
+        <h2 style="font-size:18px;margin:6px 0 14px;">Preferred Topics</h2>
+        <p class="muted">JTND will prioritize these topics across Home and Breaking News.</p>
+        <div class="tabs mt-12" id="topicTags">
+          <button data-topic="Technology" class="active">Technology</button>
+          <button data-topic="Finance" class="active">Finance</button>
+          <button data-topic="AI" class="active">AI</button>
+          <button data-topic="Crypto">Crypto</button>
+          <button data-topic="Business">Business</button>
+          <button data-topic="Nigeria">Nigeria</button>
+          <button data-topic="Global" class="active">Global</button>
+        </div>
+
+        <h2 style="font-size:18px;margin:18px 0 10px;">Data &amp; Privacy</h2>
+        <p class="muted">Your NewsData.io and Alpha Vantage API keys are stored only on this device using encrypted local storage.</p>
+        <div class="flex gap-8 mt-12" style="flex-wrap:wrap;">
+          <button class="btn ghost" id="showApiBannerBtn">Show API setup banner</button>
+          <button class="btn ghost" id="resetSettingsBtn">Reset all settings to defaults</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOGIN ================= -->
+  <section class="section" id="route-login" aria-labelledby="login-title">
+    <div class="auth-grid">
+      <div class="card auth-card">
+        <span class="eyebrow">Welcome back</span>
+        <h2 id="login-title" style="margin:6px 0 14px;">Sign in to JTND</h2>
+        <div id="loggedOutView">
+          <form id="loginForm">
+            <div class="field mb-12">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" required placeholder="you@example.com" />
+            </div>
+            <div class="field mb-12">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" required placeholder="••••••••" />
+            </div>
+            <button class="btn" type="submit" style="width:100%;">Sign in with Email</button>
+          </form>
+          <div class="divider">or continue with</div>
+          <div class="auth-providers">
+            <button class="btn ghost" id="googleLogin"><span aria-hidden="true">🔵</span> Continue with Google</button>
+            <button class="btn ghost" id="githubLogin"><span aria-hidden="true">⚫</span> Continue with GitHub</button>
+          </div>
+        </div>
+        <div id="loggedInView" hidden>
+          <p>Signed in as <strong id="loggedInEmail"></strong></p>
+          <h2 style="font-size:16px;margin:16px 0 8px;">Reading History</h2>
+          <ul class="muted" id="readingHistoryList" style="padding-left:18px;"></ul>
+          <button class="btn ghost mt-12" id="logoutBtn" style="width:100%;">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- AI ASSISTANT -->
+<button class="ai-fab" id="aiFab" aria-label="Open AI assistant" aria-expanded="false">✦</button>
+<div class="ai-panel" id="aiPanel" role="dialog" aria-label="JTND AI Assistant">
+  <div class="ai-panel-head">
+    <h3>JTND Assistant</h3>
+    <div class="flex gap-8">
+      <button class="icon-btn" id="aiClearBtn" aria-label="Clear conversation" title="Clear conversation">🗑</button>
+      <button class="icon-btn" id="aiCloseBtn" aria-label="Close assistant">✕</button>
+    </div>
+  </div>
+  <div class="ai-messages" id="aiMessages"></div>
+  <div class="ai-suggestions">
+    <button data-prompt="Summarize today's top news">Summarize today's news</button>
+    <button data-prompt="Explain what a P/E ratio is">Explain P/E ratio</button>
+    <button data-prompt="How is Bitcoin trending?">Bitcoin trend?</button>
+    <button data-prompt="Switch to light mode">Switch to light mode</button>
+  </div>
+  <div class="ai-input-row">
+    <label class="sr-only" for="aiInput">Message the assistant</label>
+    <input type="text" id="aiInput" placeholder="Ask about markets, news, or JTND…" />
+    <button class="btn" id="aiSendBtn">Send</button>
+  </div>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay" role="dialog" aria-label="Site search">
+  <div class="search-box">
+    <label class="sr-only" for="globalSearch">Search JTND</label>
+    <input type="search" id="globalSearch" placeholder="Search news, stocks, crypto, countries…" autocomplete="off" />
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<!-- ADD TO WATCHLIST MODAL -->
+<div class="modal-backdrop" id="watchModalBackdrop">
+  <div class="modal" role="dialog" aria-label="Add to watchlist">
+    <div class="modal-head"><h3>Added to Watchlist</h3><button class="icon-btn" id="watchModalClose" aria-label="Close">✕</button></div>
+    <div class="modal-body" id="watchModalBody"></div>
+  </div>
+</div>
+
+<!-- ARTICLE DETAIL MODAL -->
+<div class="modal-backdrop" id="articleModalBackdrop">
+  <div class="modal" role="dialog" aria-label="Article detail" style="width:min(620px,100%);">
+    <div class="modal-head"><h3 id="articleModalTitle">Article</h3><button class="icon-btn" id="articleModalClose" aria-label="Close">✕</button></div>
+    <div class="modal-body" id="articleModalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="container foot-grid">
+    <div>
+      <div class="brand-foot">JTND — John Tech News Division</div>
+      <p>Premium technology, finance &amp; markets intelligence.</p>
+    </div>
+    <div>
+      <p>Data: NewsData.io · CoinGecko · ExchangeRate API · AI: Anthropic Claude</p>
+      <p>© 2026 JTND. All market data for informational purposes only.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   JTND v2 — OFFLINE / FALLBACK DATA
+   Used when live APIs are unavailable or unconfigured.
+   ============================================================ */
+
+const JTND_DATA = {
+
+  indexes: [
+    { name:"S&P 500", sym:"SPX", value:5634.21, change:18.42, pct:0.33 },
+    { name:"NASDAQ", sym:"IXIC", value:18432.10, change:-42.18, pct:-0.23 },
+    { name:"DOW JONES", sym:"DJI", value:41256.78, change:88.12, pct:0.21 },
+    { name:"FTSE 100", sym:"UKX", value:8221.55, change:-12.34, pct:-0.15 },
+    { name:"NIKKEI 225", sym:"N225", value:39012.40, change:201.55, pct:0.52 },
+  ],
+
+  stocks: [
+    { name:"Apple", sym:"AAPL", price:227.84, change:1.92, pct:0.85, volume:"54.2M", cap:"3.46T" },
+    { name:"Tesla", sym:"TSLA", price:312.55, change:-8.41, pct:-2.62, volume:"98.7M", cap:"1.00T" },
+    { name:"Nvidia", sym:"NVDA", price:138.07, change:3.66, pct:2.72, volume:"210.5M", cap:"3.39T" },
+    { name:"Microsoft", sym:"MSFT", price:441.20, change:0.88, pct:0.20, volume:"21.3M", cap:"3.28T" },
+    { name:"Amazon", sym:"AMZN", price:198.34, change:2.10, pct:1.07, volume:"38.9M", cap:"2.07T" },
+    { name:"Meta", sym:"META", price:589.12, change:-4.23, pct:-0.71, volume:"14.6M", cap:"1.49T" },
+  ],
+
+  // CoinGecko ids mapped to display info (used for live + offline fallback)
+  crypto: [
+    { id:"bitcoin", name:"Bitcoin", sym:"BTC", price:67234.10, pct:1.84, cap:"1.32T", vol:"28.4B" },
+    { id:"ethereum", name:"Ethereum", sym:"ETH", price:3512.66, pct:-0.92, cap:"422.1B", vol:"14.2B" },
+    { id:"solana", name:"Solana", sym:"SOL", price:172.34, pct:3.21, cap:"81.5B", vol:"4.1B" },
+    { id:"ripple", name:"XRP", sym:"XRP", price:0.612, pct:0.45, cap:"34.2B", vol:"1.6B" },
+    { id:"binancecoin", name:"BNB", sym:"BNB", price:589.12, pct:-1.10, cap:"86.7B", vol:"1.9B" },
+    { id:"dogecoin", name:"Dogecoin", sym:"DOGE", price:0.1542, pct:5.62, cap:"22.4B", vol:"2.3B" },
+  ],
+
+  // Currency pairs vs Nigerian Naira
+  currency: [
+    { pair:"USD/NGN", base:"USD", rate:1542.30, daily:0.42, weekly:1.15 },
+    { pair:"GBP/NGN", base:"GBP", rate:1968.75, daily:-0.18, weekly:0.62 },
+    { pair:"EUR/NGN", base:"EUR", rate:1675.40, daily:0.05, weekly:-0.31 },
+    { pair:"CAD/NGN", base:"CAD", rate:1124.80, daily:0.21, weekly:0.88 },
+    { pair:"AUD/NGN", base:"AUD", rate:1018.60, daily:-0.40, weekly:-0.55 },
+    { pair:"CNY/NGN", base:"CNY", rate:213.05, daily:0.12, weekly:0.20 },
+  ],
+
+  // Articles — used across Home, Breaking, AI & Tech, Business
+  articles: [
+    {
+      id:"a1", title:"Global Chipmakers Race to Meet AI Infrastructure Demand",
+      source:"JTND Wire", time:"2h ago", read:"4 min", category:"AI & Tech", topic:"Artificial Intelligence",
+      summary:"Major semiconductor firms report record order backlogs as data center operators expand AI compute capacity ahead of next-generation model rollouts.",
+      ai:{ what:"Leading chip manufacturers confirmed order backlogs extending into next year, driven by AI data center buildouts.",
+           why:"Constrained chip supply could slow AI deployment timelines across cloud providers and enterprises.",
+           future:"Expect continued capital expenditure growth in semiconductor manufacturing and related infrastructure stocks." },
+      problem:{ issue:"Demand for AI accelerator chips is outpacing global manufacturing capacity.",
+                analysis:"New fabrication plants take years to build, while AI model training and inference workloads are scaling rapidly.",
+                solutions:"Chipmakers are prioritizing high-margin AI orders, expanding fab capacity, and diversifying packaging suppliers.",
+                opportunities:"Investors are watching semiconductor equipment makers and advanced packaging firms as indirect beneficiaries." },
+      hero:true, breaking:true,
+    },
+    {
+      id:"a2", title:"Central Banks Signal Cautious Approach to Rate Decisions",
+      source:"Reuters Desk", time:"3h ago", read:"5 min", category:"Business", topic:"Finance",
+      summary:"Policymakers across major economies indicated a wait-and-see stance amid mixed inflation data and resilient labor markets.",
+      ai:{ what:"Several central banks held benchmark rates steady, citing uncertainty in inflation trends.",
+           why:"Markets had priced in faster rate cuts; a cautious tone could affect borrowing costs and equity valuations.",
+           future:"Currency and bond markets may see increased volatility ahead of the next policy meetings." },
+      breaking:true,
+    },
+    {
+      id:"a3", title:"Bitcoin Holds Above Key Support as Institutional Inflows Continue",
+      source:"CryptoDesk", time:"1h ago", read:"3 min", category:"Crypto", topic:"Crypto",
+      summary:"Bitcoin maintained levels above a closely watched support zone as exchange-traded fund inflows extended for a third consecutive week.",
+      ai:{ what:"Bitcoin price stayed resilient amid continued ETF buying activity from institutional investors.",
+           why:"Sustained institutional demand can reduce circulating supply pressure and support price stability.",
+           future:"Analysts suggest continued inflows could set up conditions for a retest of recent highs." },
+      breaking:true,
+    },
+    {
+      id:"a4", title:"Cybersecurity Firms Warn of Rise in AI-Generated Phishing Campaigns",
+      source:"TechWatch", time:"5h ago", read:"4 min", category:"AI & Tech", topic:"Cybersecurity",
+      summary:"Security researchers report a sharp increase in convincing phishing emails crafted using generative AI tools, targeting financial institutions.",
+      ai:{ what:"Security vendors detected a surge in phishing attempts using AI-generated text and voice cloning.",
+           why:"Traditional spam filters struggle to detect highly personalized, well-written AI-generated messages.",
+           future:"Expect increased adoption of AI-based detection tools and stricter email authentication standards." },
+      problem:{ issue:"Generative AI is lowering the barrier for creating convincing phishing content at scale.",
+                analysis:"Cheap access to language models lets attackers personalize messages without language errors that once flagged scams.",
+                solutions:"Organizations are deploying AI-driven email filtering, employee training, and multi-factor authentication.",
+                opportunities:"Cybersecurity vendors specializing in AI-detection tools may see rising enterprise demand." },
+    },
+    {
+      id:"a5", title:"Robotics Startups Attract Record Venture Funding This Quarter",
+      source:"JTND Business", time:"6h ago", read:"3 min", category:"Business", topic:"Startups",
+      summary:"Investment in humanoid and industrial robotics startups reached a new quarterly high, led by automation demand in manufacturing and logistics.",
+      ai:{ what:"Venture capital funding for robotics companies hit a record high this quarter.",
+           why:"Labor shortages and rising wages are accelerating automation adoption across industries.",
+           future:"More robotics firms may pursue public listings as the sector matures." },
+    },
+    {
+      id:"a6", title:"New Space Launch Vehicle Completes Successful Test Flight",
+      source:"OrbitalNews", time:"8h ago", read:"4 min", category:"AI & Tech", topic:"Space Technology",
+      summary:"A next-generation reusable launch vehicle completed its first full test flight, marking a milestone for commercial space transport.",
+      ai:{ what:"A privately developed launch vehicle successfully completed a full-duration test flight.",
+           why:"Reusable rockets significantly reduce the cost per launch, enabling more frequent missions.",
+           future:"Increased launch cadence could accelerate satellite broadband and space research projects." },
+    },
+    {
+      id:"a7", title:"Software Sector Sees Wave of AI-Native Product Launches",
+      source:"DevWire", time:"7h ago", read:"3 min", category:"AI & Tech", topic:"Software",
+      summary:"Enterprise software vendors unveiled a new generation of AI-integrated products designed to automate workflows across departments.",
+      ai:{ what:"Multiple enterprise software vendors launched AI-native versions of their core products.",
+           why:"Businesses are seeking productivity gains amid tighter budgets and competitive pressure.",
+           future:"Subscription pricing models may shift toward usage-based AI feature tiers." },
+    },
+    {
+      id:"a8", title:"Smartphone Makers Tease Foldable Designs Ahead of Fall Event",
+      source:"GadgetDesk", time:"9h ago", read:"2 min", category:"AI & Tech", topic:"Gadgets",
+      summary:"Leaked details suggest upcoming foldable devices will feature thinner hinges and improved battery efficiency.",
+      ai:{ what:"Industry sources point to refined foldable phone designs expected at upcoming product events.",
+           why:"Foldables remain a small but growing premium segment for device makers.",
+           future:"Component suppliers for flexible displays could see increased order volume." },
+    },
+    {
+      id:"a9", title:"African Fintech Sector Sees Surge in Cross-Border Payment Startups",
+      source:"JTND Africa", time:"4h ago", read:"4 min", category:"Business", topic:"Nigeria",
+      summary:"A new wave of fintech companies is targeting cross-border remittance and payment infrastructure across West Africa.",
+      ai:{ what:"Several new fintech startups launched cross-border payment products focused on African markets.",
+           why:"High remittance fees and currency volatility have created demand for cheaper transfer alternatives.",
+           future:"Increased competition could lower transaction costs for consumers and small businesses." },
+      problem:{ issue:"Cross-border remittances to and within Africa carry some of the highest fees globally.",
+                analysis:"Limited banking infrastructure and currency conversion complexity drive up costs for traditional providers.",
+                solutions:"Fintech firms are using mobile money rails and stablecoin settlement to cut costs.",
+                opportunities:"Investors see opportunity in payment infrastructure, compliance tooling, and digital wallets." },
+    },
+    {
+      id:"a10", title:"Major Tech Firm Announces Expanded Data Center Investment",
+      source:"JTND Wire", time:"10h ago", read:"3 min", category:"Business", topic:"Technology",
+      summary:"A leading technology company outlined plans for additional data center capacity to support cloud and AI services growth.",
+      ai:{ what:"A major cloud provider announced new data center projects in multiple regions.",
+           why:"Rising demand for AI workloads requires significant additional compute and power infrastructure.",
+           future:"Local energy grids and construction sectors near new sites may see economic impact." },
+    },
+    {
+      id:"a11", title:"AI Models Show Improved Performance on Scientific Reasoning Benchmarks",
+      source:"ResearchDesk", time:"12h ago", read:"5 min", category:"AI & Tech", topic:"Artificial Intelligence",
+      summary:"Newly released benchmark results show meaningful gains in AI systems' ability to handle multi-step scientific reasoning tasks.",
+      ai:{ what:"Latest AI model evaluations show improved scores on complex reasoning and scientific problem-solving tasks.",
+           why:"Better reasoning capability expands potential AI applications in research, engineering and education.",
+           future:"Expect increased integration of AI reasoning tools into scientific and academic workflows." },
+    },
+    {
+      id:"a12", title:"Emerging Markets Currencies Strengthen on Improved Trade Balances",
+      source:"FXDesk", time:"11h ago", read:"3 min", category:"Business", topic:"Finance",
+      summary:"Several emerging market currencies gained against the dollar following stronger-than-expected trade and export data.",
+      ai:{ what:"A number of emerging market currencies appreciated following positive trade balance reports.",
+           why:"Improved export revenue can reduce currency pressure and support central bank reserves.",
+           future:"Sustained trends could influence import costs and inflation outlooks in affected countries." },
+    },
+  ],
+
+  // World map news pins: lon/lat approximated to viewBox 0-1000 x 0-500 (equirectangular-ish)
+  countries: [
+    { code:"US", name:"United States", x:140, y:120, type:"finance",
+      headlines:["Fed signals patience on rate path","Tech earnings beat expectations","Chip export rules under review"] },
+    { code:"GB", name:"United Kingdom", x:455, y:75, type:"finance",
+      headlines:["FTSE rebounds on banking strength","UK inflation data due this week"] },
+    { code:"DE", name:"Germany", x:500, y:90, type:"tech",
+      headlines:["Auto sector pivots to software platforms","Industrial output data mixed"] },
+    { code:"NG", name:"Nigeria", x:475, y:240, type:"developing",
+      headlines:["Naira stabilizes after CBN intervention","Fintech sector attracts new funding","Power sector reform debated"] },
+    { code:"ZA", name:"South Africa", x:510, y:415, type:"positive",
+      headlines:["Mining exports rise on commodity demand","Currency gains against dollar"] },
+    { code:"CN", name:"China", x:790, y:130, type:"breaking",
+      headlines:["Manufacturing PMI surprises to upside","Tech regulators ease restrictions","Property sector stabilization measures"] },
+    { code:"JP", name:"Japan", x:910, y:140, type:"finance",
+      headlines:["Nikkei hits multi-year high","Yen volatility continues"] },
+    { code:"IN", name:"India", x:700, y:190, type:"tech",
+      headlines:["IT services sector posts strong growth","Startup funding rebounds"] },
+    { code:"BR", name:"Brazil", x:240, y:350, type:"developing",
+      headlines:["Central bank holds rates steady","Agricultural exports climb"] },
+    { code:"AU", name:"Australia", x:850, y:390, type:"positive",
+      headlines:["Resources sector leads market gains","RBA maintains cautious stance"] },
+    { code:"AE", name:"UAE", x:615, y:165, type:"finance",
+      headlines:["Sovereign funds increase tech investments","Non-oil sector growth accelerates"] },
+    { code:"KR", name:"South Korea", x:865, y:130, type:"tech",
+      headlines:["Chipmakers report record exports","5G infrastructure expansion continues"] },
+  ],
+
+  // Simple sparkline data generator seed values
+  sparkSeeds: { AAPL:[5,8,6,9,12,10,14,13,16], TSLA:[20,18,22,15,12,16,10,8,6], NVDA:[10,12,15,14,18,22,20,25,28],
+    MSFT:[14,15,14,16,15,17,16,18,17], AMZN:[8,9,11,10,13,12,14,13,15], META:[18,17,19,16,15,17,14,15,13] },
+};
+
+</script>
+<script>
+/* ============================================================
+   JTND v2 — APPLICATION LOGIC
+   Single-file SPA: navigation, state, theming, news, markets,
+   crypto, currency, world map, watchlist, bookmarks, AI assistant.
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  /* ---------------------------------------------------------
+     STORAGE HELPERS (with light obfuscation for "encrypted" key storage)
+     --------------------------------------------------------- */
+  const STORAGE_PREFIX = 'jtnd_v2_';
+
+  function obfuscate(str) {
+    try { return btoa(unescape(encodeURIComponent(str))); } catch (e) { return str; }
+  }
+  function deobfuscate(str) {
+    try { return decodeURIComponent(escape(atob(str))); } catch (e) { return ''; }
+  }
+  function storageSet(key, value) {
+    try { localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value)); } catch (e) { /* storage unavailable */ }
+  }
+  function storageGet(key, fallback) {
+    try {
+      const raw = localStorage.getItem(STORAGE_PREFIX + key);
+      return raw === null ? fallback : JSON.parse(raw);
+    } catch (e) { return fallback; }
+  }
+  function storageRemove(key) {
+    try { localStorage.removeItem(STORAGE_PREFIX + key); } catch (e) {}
+  }
+
+  /* ---------------------------------------------------------
+     SANITIZATION — basic XSS protection for any user-influenced text
+     --------------------------------------------------------- */
+  function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /* ---------------------------------------------------------
+     APP STATE
+     --------------------------------------------------------- */
+  const state = {
+    theme: storageGet('theme', 'dark'),
+    accent: storageGet('accent', 'lime'),
+    layout: storageGet('layout', 'standard'),
+    font: storageGet('font', 'inter'),
+    topics: storageGet('topics', ['Technology', 'Finance', 'AI', 'Global']),
+    bookmarks: storageGet('bookmarks', []),
+    watchlist: storageGet('watchlist', []), // {type, id, name, sym}
+    user: storageGet('user', null), // {email, history:[]}
+    newsApiKey: storageGet('newsApiKeyEnc', null), // obfuscated
+    stockApiKey: storageGet('stockApiKeyEnc', null), // obfuscated
+    cryptoLive: null,
+    currencyLive: null,
+    aiLog: storageGet('aiLog', []),
+  };
+
+  /* ---------------------------------------------------------
+     TOAST NOTIFICATIONS
+     --------------------------------------------------------- */
+  function toast(msg, type) {
+    const wrap = document.getElementById('toastWrap');
+    const el = document.createElement('div');
+    el.className = 'toast' + (type ? ' ' + type : '');
+    el.textContent = msg;
+    wrap.appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 300ms'; }, 3200);
+    setTimeout(() => el.remove(), 3600);
+  }
+
+  /* ---------------------------------------------------------
+     LIVE DATA STATUS BADGES
+     A small reusable indicator used on Stocks/Crypto/Currency
+     section heads to show whether data is live or offline.
+     --------------------------------------------------------- */
+  function liveBadge(isLive) {
+    return isLive
+      ? `<span class="status-pill connected" style="margin-left:10px;"><span class="dot"></span> Live</span>`
+      : `<span class="status-pill disconnected" style="margin-left:10px;"><span class="dot"></span> Offline data</span>`;
+  }
+  function setLiveBadge(targetId, isLive) {
+    const el = document.getElementById(targetId);
+    if (el) el.innerHTML = liveBadge(isLive);
+  }
+
+  /* ---------------------------------------------------------
+     THEME / CUSTOMIZATION
+     --------------------------------------------------------- */
+  function applyTheme() {
+    let effective = state.theme;
+    if (state.theme === 'system') {
+      effective = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.body.setAttribute('data-theme', effective);
+    document.body.setAttribute('data-accent', state.accent);
+    document.body.setAttribute('data-layout', state.layout);
+    document.body.setAttribute('data-font', state.font);
+    document.getElementById('themeBtn').textContent = effective === 'dark' ? '🌙' : '☀️';
+
+    // sync settings UI
+    document.querySelectorAll('#themeTabs button').forEach(b => b.classList.toggle('active', b.dataset.themeOpt === state.theme));
+    document.querySelectorAll('#accentSwatches .swatch').forEach(b => b.classList.toggle('active', b.dataset.accent === state.accent));
+    document.querySelectorAll('#layoutTabs button').forEach(b => b.classList.toggle('active', b.dataset.layoutOpt === state.layout));
+    document.querySelectorAll('#fontTabs button').forEach(b => b.classList.toggle('active', b.dataset.fontOpt === state.font));
+  }
+
+  function setTheme(t) { state.theme = t; storageSet('theme', t); applyTheme(); }
+  function setAccent(a) { state.accent = a; storageSet('accent', a); applyTheme(); }
+  function setLayout(l) { state.layout = l; storageSet('layout', l); applyTheme(); }
+  function setFont(f) { state.font = f; storageSet('font', f); applyTheme(); }
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (state.theme === 'system') applyTheme();
+  });
+
+  /* ---------------------------------------------------------
+     ROUTING / NAVIGATION
+     --------------------------------------------------------- */
+  const ROUTES = ['home','breaking','markets','stocks','crypto','currency','ai-tech','business','worldmap','watchlist','bookmarks','settings','login'];
+
+  function navigate(route) {
+    if (!ROUTES.includes(route)) route = 'home';
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('route-' + route);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('#mainNav button').forEach(b => b.classList.toggle('active', b.dataset.route === route));
+    document.getElementById('mainNav').classList.remove('open');
+    document.getElementById('navToggle').setAttribute('aria-expanded', 'false');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    location.hash = route;
+    // Lazy init for heavy sections
+    if (route === 'worldmap' && !mapInitialized) initWorldMap();
+    if (route === 'crypto' && !cryptoLoaded) loadCrypto();
+    if (route === 'currency' && !currencyLoaded) loadCurrency();
+    if (route === 'stocks' && !stocksLoaded) loadStocks();
+  }
+
+  document.getElementById('mainNav').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-route]');
+    if (btn) navigate(btn.dataset.route);
+  });
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-route-link]');
+    if (link) navigate(link.dataset.routeLink);
+  });
+
+  document.getElementById('navToggle').addEventListener('click', () => {
+    const nav = document.getElementById('mainNav');
+    const open = nav.classList.toggle('open');
+    document.getElementById('navToggle').setAttribute('aria-expanded', String(open));
+  });
+
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    let effective = state.theme;
+    if (state.theme === 'system') effective = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    setTheme(effective === 'dark' ? 'light' : 'dark');
+  });
+
+  // Initial route from hash
+  window.addEventListener('hashchange', () => navigate(location.hash.replace('#','') || 'home'));
+
+  /* ---------------------------------------------------------
+     SPARKLINE RENDERER (inline SVG)
+     --------------------------------------------------------- */
+  function sparkline(values, isUp) {
+    const w = 100, h = 32, pad = 2;
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = (max - min) || 1;
+    const step = (w - pad * 2) / (values.length - 1);
+    const pts = values.map((v, i) => {
+      const x = pad + i * step;
+      const y = h - pad - ((v - min) / range) * (h - pad * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const color = isUp ? 'var(--up)' : 'var(--down)';
+    return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  /* ---------------------------------------------------------
+     ARTICLE CARD RENDERING
+     --------------------------------------------------------- */
+  function articleImageHtml(a) {
+    if (a.image_url) {
+      return `<div class="article-img-wrap">
+        <img src="${escapeHTML(a.image_url)}" alt="${escapeHTML(a.title)}" loading="lazy" onerror="this.parentElement.outerHTML='<div class=\\'article-img-placeholder\\'>📰</div>'">
+      </div>`;
+    }
+    // category-based placeholder emoji
+    const icons = { 'AI & Tech':'🤖', 'Business':'💼', 'Crypto':'₿', 'Finance':'📊', 'Global':'🌍', 'Nigeria':'🇳🇬' };
+    const icon = icons[a.category] || '📰';
+    return `<div class="article-img-placeholder">${icon}</div>`;
+  }
+
+  function articleCard(a, opts) {
+    opts = opts || {};
+    const isBookmarked = state.bookmarks.includes(a.id);
+    return `
+    <article class="card article" data-article-id="${a.id}">
+      ${articleImageHtml(a)}
+      <div class="meta">
+        <span class="cat">${escapeHTML(a.category)}</span>
+        <span>${escapeHTML(a.time)}</span>
+        <span>· ${escapeHTML(a.read)} read</span>
+      </div>
+      <h3 tabindex="0" role="button" aria-label="Open article: ${escapeHTML(a.title)}">${escapeHTML(a.title)}</h3>
+      <p>${escapeHTML(a.summary)}</p>
+      ${opts.hideAI ? '' : `<div class="ai-summary">
+        <b>AI Summary —</b> What happened: ${escapeHTML(a.ai.what)}
+      </div>`}
+      <div class="article-foot">
+        <span class="src">${escapeHTML(a.source)}</span>
+        <div class="article-actions">
+          <button class="bookmark-btn ${isBookmarked ? 'bookmarked' : ''}" data-id="${a.id}" aria-label="${isBookmarked ? 'Remove bookmark' : 'Bookmark article'}" aria-pressed="${isBookmarked}" title="Bookmark">${isBookmarked ? '★' : '☆'}</button>
+          <button class="share-btn" data-id="${a.id}" aria-label="Share article" title="Share">⤴</button>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  function fullAICard(a) {
+    let extra = '';
+    if (a.problem) {
+      extra = `
+      <div class="ai-summary mt-12" style="display:flex;flex-direction:column;gap:6px;">
+        <div><b>PROBLEM —</b> ${escapeHTML(a.problem.issue)}</div>
+        <div><b>AI ANALYSIS —</b> ${escapeHTML(a.problem.analysis)}</div>
+        <div><b>SUGGESTED SOLUTIONS —</b> ${escapeHTML(a.problem.solutions)}</div>
+        <div><b>OPPORTUNITIES —</b> ${escapeHTML(a.problem.opportunities)}</div>
+      </div>`;
+    }
+    const isBookmarked = state.bookmarks.includes(a.id);
+    return `
+    <article class="card article" data-article-id="${a.id}">
+      ${articleImageHtml(a)}
+      <div class="meta">
+        <span class="cat">${escapeHTML(a.category)}</span>
+        <span>${escapeHTML(a.time)}</span>
+        <span>· ${escapeHTML(a.read)} read</span>
+      </div>
+      <h3 tabindex="0" role="button" aria-label="Open article: ${escapeHTML(a.title)}">${escapeHTML(a.title)}</h3>
+      <p>${escapeHTML(a.summary)}</p>
+      <div class="ai-summary" style="display:flex;flex-direction:column;gap:6px;">
+        <div><b>WHAT HAPPENED —</b> ${escapeHTML(a.ai.what)}</div>
+        <div><b>WHY IT MATTERS —</b> ${escapeHTML(a.ai.why)}</div>
+        <div><b>FUTURE IMPACT —</b> ${escapeHTML(a.ai.future)}</div>
+      </div>
+      ${extra}
+      <div class="article-foot">
+        <span class="src">${escapeHTML(a.source)}</span>
+        <div class="article-actions">
+          <button class="bookmark-btn ${isBookmarked ? 'bookmarked' : ''}" data-id="${a.id}" aria-label="${isBookmarked ? 'Remove bookmark' : 'Bookmark article'}" aria-pressed="${isBookmarked}" title="Bookmark">${isBookmarked ? '★' : '☆'}</button>
+          <button class="share-btn" data-id="${a.id}" aria-label="Share article" title="Share">⤴</button>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  // Delegate bookmark/share clicks globally
+  document.addEventListener('click', (e) => {
+    const bm = e.target.closest('.bookmark-btn');
+    if (bm) { toggleBookmark(bm.dataset.id); return; }
+    const sh = e.target.closest('.share-btn');
+    if (sh) { shareArticle(sh.dataset.id); return; }
+    const titleLink = e.target.closest('.article h3');
+    if (titleLink) {
+      const card = titleLink.closest('.article[data-article-id]');
+      if (card) { openArticleModal(card.dataset.articleId); return; }
+    }
+  });
+
+  let lastFocusedEl = null;
+  function openArticleModal(id) {
+    const a = findArticle(id);
+    if (!a) return;
+    lastFocusedEl = document.activeElement;
+    const isBookmarked = state.bookmarks.includes(a.id);
+    let problemHtml = '';
+    if (a.problem) {
+      problemHtml = `
+        <div class="ai-summary" style="display:flex;flex-direction:column;gap:8px;">
+          <div><b>PROBLEM —</b> ${escapeHTML(a.problem.issue)}</div>
+          <div><b>AI ANALYSIS —</b> ${escapeHTML(a.problem.analysis)}</div>
+          <div><b>SUGGESTED SOLUTIONS —</b> ${escapeHTML(a.problem.solutions)}</div>
+          <div><b>OPPORTUNITIES —</b> ${escapeHTML(a.problem.opportunities)}</div>
+        </div>`;
+    }
+    // related stories: same topic or category, excluding current
+    const related = JTND_DATA.articles.filter(r => r.id !== a.id && (r.topic === a.topic || r.category === a.category)).slice(0, 3);
+
+    document.getElementById('articleModalTitle').textContent = a.category;
+    document.getElementById('articleModalBody').innerHTML = `
+      <div class="meta">
+        <span class="cat">${escapeHTML(a.category)}</span>
+        <span>${escapeHTML(a.time)}</span>
+        <span>· ${escapeHTML(a.read)} read</span>
+        <span>· ${escapeHTML(a.source)}</span>
+      </div>
+      <h2 style="font-family:var(--font-display);font-size:24px;margin:0;line-height:1.25;">${escapeHTML(a.title)}</h2>
+      <p style="color:var(--text2);font-size:14.5px;line-height:1.7;">${escapeHTML(a.summary)} ${escapeHTML(a.ai.future)}</p>
+      <div class="ai-summary" style="display:flex;flex-direction:column;gap:8px;">
+        <div><b>WHAT HAPPENED —</b> ${escapeHTML(a.ai.what)}</div>
+        <div><b>WHY IT MATTERS —</b> ${escapeHTML(a.ai.why)}</div>
+        <div><b>FUTURE IMPACT —</b> ${escapeHTML(a.ai.future)}</div>
+      </div>
+      ${problemHtml}
+      <div class="article-foot">
+        <span class="src">${escapeHTML(a.source)} · ${escapeHTML(a.time)}</span>
+        <div class="article-actions">
+          <button class="bookmark-btn ${isBookmarked?'bookmarked':''}" data-id="${a.id}" aria-label="Bookmark article" aria-pressed="${isBookmarked}">${isBookmarked?'★':'☆'}</button>
+          <button class="share-btn" data-id="${a.id}" aria-label="Share article">⤴</button>
+        </div>
+      </div>
+      ${related.length ? `
+        <h4 style="margin:6px 0;font-family:var(--font-display);">Related Stories</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${related.map(r => `<button class="related-link" data-id="${r.id}" style="text-align:left;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);font-size:13px;">
+            <strong style="font-family:var(--font-display);display:block;margin-bottom:2px;">${escapeHTML(r.title)}</strong>
+            <span class="muted" style="font-size:11.5px;">${escapeHTML(r.source)} · ${escapeHTML(r.time)}</span>
+          </button>`).join('')}
+        </div>` : ''}
+    `;
+    document.getElementById('articleModalBackdrop').classList.add('open');
+    document.getElementById('articleModalClose').focus();
+
+    // record reading history
+    if (state.user) {
+      state.user.history = state.user.history || [];
+      state.user.history.push(a.title);
+      storageSet('user', state.user);
+    }
+  }
+  function closeArticleModal() {
+    document.getElementById('articleModalBackdrop').classList.remove('open');
+    if (lastFocusedEl && typeof lastFocusedEl.focus === 'function') lastFocusedEl.focus();
+  }
+  document.getElementById('articleModalClose').addEventListener('click', closeArticleModal);
+  document.getElementById('articleModalBackdrop').addEventListener('click', (e) => { if (e.target.id === 'articleModalBackdrop') closeArticleModal(); });
+  document.getElementById('articleModalBody').addEventListener('click', (e) => {
+    const rel = e.target.closest('.related-link');
+    if (rel) openArticleModal(rel.dataset.id);
+  });
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.article h3[role="button"]')) {
+      e.preventDefault();
+      const card = e.target.closest('.article[data-article-id]');
+      if (card) openArticleModal(card.dataset.articleId);
+    }
+  });
+
+
+  function findArticle(id) { return JTND_DATA.articles.find(a => a.id === id); }
+
+  function toggleBookmark(id) {
+    const idx = state.bookmarks.indexOf(id);
+    if (idx >= 0) { state.bookmarks.splice(idx, 1); toast('Removed from bookmarks'); }
+    else { state.bookmarks.push(id); toast('Saved to bookmarks', 'success'); }
+    storageSet('bookmarks', state.bookmarks);
+    // refresh visible bookmark buttons
+    document.querySelectorAll(`.bookmark-btn[data-id="${id}"]`).forEach(btn => {
+      const on = state.bookmarks.includes(id);
+      btn.classList.toggle('bookmarked', on);
+      btn.textContent = on ? '★' : '☆';
+      btn.setAttribute('aria-pressed', String(on));
+    });
+    if (document.getElementById('route-bookmarks').classList.contains('active')) renderBookmarks();
+  }
+
+  function shareArticle(id) {
+    const a = findArticle(id);
+    if (!a) return;
+    const shareData = { title: a.title, text: a.summary, url: location.href + '#' + id };
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(`${a.title} — ${shareData.url}`).then(() => toast('Link copied to clipboard', 'success'));
+    } else {
+      toast('Sharing not supported on this device');
+    }
+  }
+
+  /* ---------------------------------------------------------
+     RENDER: HOME
+     --------------------------------------------------------- */
+  function renderHome() {
+    const hero = JTND_DATA.articles.find(a => a.hero) || JTND_DATA.articles[0];
+    document.getElementById('heroMain').innerHTML = `
+      <div class="hero-content">
+        <div class="meta">
+          <span class="cat">${escapeHTML(hero.category)}</span>
+          <span>${escapeHTML(hero.time)}</span>
+          <span>· ${escapeHTML(hero.read)} read</span>
+        </div>
+        <h1>${escapeHTML(hero.title)}</h1>
+        <p>${escapeHTML(hero.summary)}</p>
+        <div class="article-foot" style="border-top:none;padding-top:0;">
+          <span class="src">${escapeHTML(hero.source)}</span>
+          <div class="article-actions">
+            <button class="bookmark-btn ${state.bookmarks.includes(hero.id) ? 'bookmarked' : ''}" data-id="${hero.id}" aria-label="Bookmark article">${state.bookmarks.includes(hero.id) ? '★' : '☆'}</button>
+            <button class="share-btn" data-id="${hero.id}" aria-label="Share article">⤴</button>
+          </div>
+        </div>
+      </div>`;
+
+    const trending = JTND_DATA.articles.slice(1, 5);
+    document.getElementById('trendingList').innerHTML = trending.map((a, i) => `
+      <div class="trend-row">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <div>
+          <h4>${escapeHTML(a.title)}</h4>
+          <span class="muted" style="font-size:11.5px;">${escapeHTML(a.source)} · ${escapeHTML(a.time)}</span>
+        </div>
+      </div>`).join('');
+
+    document.getElementById('homeIndexes').innerHTML = JTND_DATA.indexes.map(idx => {
+      const up = idx.change >= 0;
+      return `<div class="card stat-card">
+        <span class="label">${escapeHTML(idx.name)}</span>
+        <span class="value">${idx.value.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+        <span class="change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(idx.change).toFixed(2)} (${up?'+':''}${idx.pct.toFixed(2)}%)</span>
+      </div>`;
+    }).join('');
+
+    const headlines = JTND_DATA.articles.filter(a => !a.hero).slice(0, 6);
+    document.getElementById('homeHeadlines').innerHTML = headlines.slice(0,3).map(a => articleCard(a)).join('');
+  }
+
+  /* ---------------------------------------------------------
+     RENDER: BREAKING NEWS
+     --------------------------------------------------------- */
+  function renderBreaking() {
+    const breaking = JTND_DATA.articles.filter(a => a.breaking || a.topic);
+    // prioritize preferred topics
+    const sorted = [...breaking].sort((a,b) => {
+      const aPref = state.topics.includes(a.topic) ? 1 : 0;
+      const bPref = state.topics.includes(b.topic) ? 1 : 0;
+      return bPref - aPref;
+    });
+    document.getElementById('breakingGrid').innerHTML = sorted.map(a => fullAICard(a)).join('');
+    refreshApiStatusUI();
+  }
+
+  /* ---------------------------------------------------------
+     API KEY MANAGEMENT (NewsData.io)
+     --------------------------------------------------------- */
+  function setApiPills(className, html) {
+    const pill = document.getElementById('apiStatusPill');
+    const ref = document.getElementById('apiStatusPillRef');
+    if (pill) { pill.className = 'status-pill ' + className; pill.innerHTML = html; }
+    if (ref) { ref.className = 'status-pill ' + className; ref.innerHTML = html; }
+  }
+
+  function refreshApiStatusUI() {
+    const input = document.getElementById('newsApiKey');
+    if (state.newsApiKey) {
+      const key = deobfuscate(state.newsApiKey);
+      input.value = key;
+      setApiPills('connected', '<span class="dot"></span> Key saved — connected');
+    } else {
+      input.value = '';
+      setApiPills('disconnected', '<span class="dot"></span> Not connected — offline data active');
+    }
+    // update reference card text
+    const ref = document.getElementById('breakingApiRef');
+    if (ref) {
+      const p = ref.querySelector('p');
+      if (p) p.textContent = state.newsApiKey
+        ? 'Live headlines from NewsData.io are active. Manage or remove your key in the banner above or in Settings.'
+        : 'Showing offline curated headlines. Connect NewsData.io at the top of the page for live updates.';
+    }
+  }
+
+  // Dismiss API setup banner (persisted)
+  (function initApiBanner() {
+    const banner = document.getElementById('apiSetupBanner');
+    if (storageGet('apiBannerDismissed', false)) {
+      banner.classList.add('gone');
+    }
+    document.getElementById('dismissApiSetup').addEventListener('click', () => {
+      banner.classList.add('gone');
+      storageSet('apiBannerDismissed', true);
+    });
+  })();
+
+  document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
+    const val = document.getElementById('newsApiKey').value.trim();
+    if (!val) { toast('Enter an API key first'); return; }
+    state.newsApiKey = obfuscate(val);
+    storageSet('newsApiKeyEnc', state.newsApiKey);
+    toast('API key saved — testing connection…', 'success');
+    refreshApiStatusUI();
+    document.getElementById('testApiKeyBtn').click();
+    startNewsAutoRefresh();
+  });
+
+  document.getElementById('removeApiKeyBtn').addEventListener('click', () => {
+    state.newsApiKey = null;
+    storageRemove('newsApiKeyEnc');
+    toast('API key removed');
+    refreshApiStatusUI();
+  });
+
+  document.getElementById('testApiKeyBtn').addEventListener('click', async () => {
+    const key = state.newsApiKey ? deobfuscate(state.newsApiKey) : document.getElementById('newsApiKey').value.trim();
+    if (!key) { toast('Enter an API key first'); return; }
+    setApiPills('disconnected', '<span class="dot"></span> Testing connection…');
+    try {
+      const res = await fetch(`https://newsdata.io/api/1/latest?apikey=${encodeURIComponent(key)}&language=en&category=technology`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.status === 'success') {
+          setApiPills('connected', '<span class="dot"></span> Connected — live headlines active');
+          toast('NewsData.io connected successfully', 'success');
+          if (!state.newsApiKey) { state.newsApiKey = obfuscate(key); storageSet('newsApiKeyEnc', state.newsApiKey); }
+          fetchLiveNews();
+        } else {
+          throw new Error('invalid');
+        }
+      } else if (res.status === 401 || res.status === 403) {
+        throw new Error('invalid-key');
+      } else {
+        throw new Error('network');
+      }
+    } catch (err) {
+      setApiPills('invalid', '<span class="dot"></span> Invalid key or unreachable — offline data active');
+      toast('Could not connect to NewsData.io. Showing offline data.', 'error');
+    }
+  });
+
+  /* ---------------------------------------------------------
+     LIVE NEWS — NewsData.io fetch + 30s auto-refresh
+     --------------------------------------------------------- */
+  const newsState = {
+    refreshTimer: null,
+    countdownTimer: null,
+    countdown: 30,
+    fetching: false,
+  };
+
+  function setNewsCountdown(s) {
+    newsState.countdown = s;
+    const el = document.getElementById('newsCountdownBadge');
+    if (el) el.textContent = `Refreshing in ${s}s`;
+  }
+
+  function mapNewsToArticle(item, idx) {
+    const catMap = { technology:'AI & Tech', business:'Business', science:'AI & Tech', crypto:'Crypto' };
+    const topicMap = { technology:'Technology', business:'Business', science:'Artificial Intelligence', crypto:'Crypto' };
+    const firstCat = (item.category || [])[0] || 'business';
+    const category = catMap[firstCat] || 'Business';
+    const topic = topicMap[firstCat] || 'Global';
+    const pub = item.pubDate ? new Date(item.pubDate) : new Date();
+    const diffMin = Math.round((Date.now() - pub.getTime()) / 60000);
+    const timeStr = diffMin < 1 ? 'Just now' : diffMin < 60 ? `${diffMin}m ago` : `${Math.round(diffMin/60)}h ago`;
+    const summary = (item.description || item.title || '').slice(0, 220);
+    return {
+      id: 'live_' + (item.article_id || String(idx) + String(Date.now())),
+      title: item.title || 'Untitled',
+      source: item.source_name || item.source_id || 'Live Source',
+      time: timeStr,
+      read: '3 min',
+      category,
+      topic,
+      image_url: item.image_url || null,
+      summary,
+      ai: {
+        what: summary,
+        why: 'This story is developing — check back for full analysis.',
+        future: 'Monitor for follow-up coverage and market reactions.',
+      },
+      breaking: true,
+    };
+  }
+
+  async function fetchLiveNews() {
+    if (!state.newsApiKey || newsState.fetching) return;
+    newsState.fetching = true;
+    const key = deobfuscate(state.newsApiKey);
+    // Update badge to show we're fetching
+    const badge = document.getElementById('newsCountdownBadge');
+    if (badge) badge.textContent = 'Fetching…';
+    try {
+      // Fetch one category at a time to avoid rate limits — rotate on each call
+      const categories = ['technology', 'business', 'science'];
+      const results = await Promise.all(
+        categories.map(cat =>
+          fetch(`https://newsdata.io/api/1/latest?apikey=${encodeURIComponent(key)}&language=en&category=${cat}&image=1`)
+            .then(r => r.ok ? r.json() : null)
+            .catch(() => null)
+        )
+      );
+      const liveArticles = [];
+      results.forEach((data, ci) => {
+        if (data && data.status === 'success' && Array.isArray(data.results)) {
+          data.results.slice(0, 6).forEach((item, i) => {
+            liveArticles.push(mapNewsToArticle(item, ci * 10 + i));
+          });
+        }
+      });
+      if (liveArticles.length > 0) {
+        JTND_DATA.articles = [
+          ...liveArticles,
+          ...JTND_DATA.articles.filter(a => !a.id.startsWith('live_'))
+        ].slice(0, 36);
+        renderBreaking();
+        renderHome();
+        renderAITech('all');
+        renderBusiness('all');
+        renderTicker();
+        toast(`✓ News refreshed — ${liveArticles.length} live articles loaded`, 'success');
+      }
+    } catch (err) {
+      // silently keep existing data
+    } finally {
+      newsState.fetching = false;
+      setNewsCountdown(30);
+    }
+  }
+
+  function startNewsAutoRefresh() {
+    // Clear any existing timers first
+    if (newsState.refreshTimer) clearInterval(newsState.refreshTimer);
+    if (newsState.countdownTimer) clearInterval(newsState.countdownTimer);
+
+    // Reset countdown
+    setNewsCountdown(30);
+
+    // Countdown ticks every second
+    newsState.countdownTimer = setInterval(() => {
+      const next = newsState.countdown - 1;
+      if (next <= 0) {
+        setNewsCountdown(30); // reset immediately so it doesn't flicker at 0
+        fetchLiveNews();
+      } else {
+        setNewsCountdown(next);
+      }
+    }, 1000);
+
+    // Belt-and-suspenders: also fire at exactly 30s in case countdown drifts
+    newsState.refreshTimer = setInterval(() => {
+      fetchLiveNews();
+    }, 30000);
+  }
+
+  /* ---------------------------------------------------------
+     RENDER: MARKETS
+     --------------------------------------------------------- */
+  function renderMarkets() {
+    document.getElementById('marketsIndexes').innerHTML = JTND_DATA.indexes.map(idx => {
+      const up = idx.change >= 0;
+      return `<div class="card stat-card">
+        <span class="label">${escapeHTML(idx.name)}</span>
+        <span class="value">${idx.value.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+        <span class="change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(idx.change).toFixed(2)} (${up?'+':''}${idx.pct.toFixed(2)}%)</span>
+      </div>`;
+    }).join('');
+
+    const stocks = [...JTND_DATA.stocks].sort((a,b) => b.pct - a.pct);
+    const gainers = stocks.filter(s => s.pct > 0).slice(0,3);
+    const losers = [...stocks].sort((a,b)=>a.pct-b.pct).filter(s=>s.pct<0).slice(0,3);
+    const active = [...JTND_DATA.stocks].sort((a,b) => parseFloat(b.volume) - parseFloat(a.volume)).slice(0,3);
+
+    function miniRow(s) {
+      const up = s.pct >= 0;
+      return `<div class="trend-row" style="align-items:center;">
+        <div class="asset-icon">${escapeHTML(s.sym.slice(0,2))}</div>
+        <div style="flex:1;">
+          <h4>${escapeHTML(s.name)} <span class="muted" style="font-weight:400;">${escapeHTML(s.sym)}</span></h4>
+          <span class="change ${up?'up':'down'}" style="font-size:12px;">${up?'▲':'▼'} ${up?'+':''}${s.pct.toFixed(2)}%</span>
+        </div>
+        <strong>$${s.price.toFixed(2)}</strong>
+      </div>`;
+    }
+    document.getElementById('topGainers').innerHTML = gainers.map(miniRow).join('') || '<p class="muted">No gainers right now.</p>';
+    document.getElementById('topLosers').innerHTML = losers.map(miniRow).join('') || '<p class="muted">No losers right now.</p>';
+    document.getElementById('mostActive').innerHTML = active.map(miniRow).join('');
+  }
+
+  /* ---------------------------------------------------------
+     STOCK API KEY MANAGEMENT (Alpha Vantage, optional)
+     --------------------------------------------------------- */
+  function refreshStockApiStatusUI() {
+    const pill = document.getElementById('stockApiStatusPill');
+    const input = document.getElementById('stockApiKey');
+    if (state.stockApiKey) {
+      input.value = deobfuscate(state.stockApiKey);
+      pill.className = 'status-pill connected';
+      pill.innerHTML = '<span class="dot"></span> Key saved — ready to test connection';
+    } else {
+      input.value = '';
+      pill.className = 'status-pill disconnected';
+      pill.innerHTML = '<span class="dot"></span> Not configured — using Stooq / offline data';
+    }
+  }
+  document.getElementById('saveStockApiKeyBtn').addEventListener('click', () => {
+    const val = document.getElementById('stockApiKey').value.trim();
+    if (!val) { toast('Enter an API key first'); return; }
+    state.stockApiKey = obfuscate(val);
+    storageSet('stockApiKeyEnc', state.stockApiKey);
+    toast('Alpha Vantage key saved securely', 'success');
+    refreshStockApiStatusUI();
+  });
+  document.getElementById('removeStockApiKeyBtn').addEventListener('click', () => {
+    state.stockApiKey = null;
+    storageRemove('stockApiKeyEnc');
+    toast('Alpha Vantage key removed');
+    refreshStockApiStatusUI();
+  });
+  document.getElementById('testStockApiKeyBtn').addEventListener('click', async () => {
+    const pill = document.getElementById('stockApiStatusPill');
+    const key = state.stockApiKey ? deobfuscate(state.stockApiKey) : document.getElementById('stockApiKey').value.trim();
+    if (!key) { toast('Enter an API key first'); return; }
+    pill.className = 'status-pill disconnected';
+    pill.innerHTML = '<span class="dot"></span> Testing connection…';
+    try {
+      const res = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL&apikey=${encodeURIComponent(key)}`);
+      if (!res.ok) throw new Error('network');
+      const data = await res.json();
+      if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
+        pill.className = 'status-pill connected';
+        pill.innerHTML = '<span class="dot"></span> Connected — Alpha Vantage data available';
+        toast('Alpha Vantage connected successfully', 'success');
+        stocksLoaded = false; loadStocks();
+      } else if (data && (data['Note'] || data['Information'])) {
+        throw new Error('rate-limit');
+      } else {
+        throw new Error('invalid');
+      }
+    } catch (err) {
+      pill.className = 'status-pill invalid';
+      pill.innerHTML = '<span class="dot"></span> Invalid key, rate-limited, or unreachable — using Stooq / offline data';
+      toast('Could not verify Alpha Vantage key. Falling back to Stooq.', 'error');
+    }
+  });
+
+  /* ---------------------------------------------------------
+     RENDER: STOCKS
+     --------------------------------------------------------- */
+  let stockRange = '1D';
+  let stocksLoaded = false;
+  const STOOQ_SYMBOLS = { AAPL:'aapl.us', TSLA:'tsla.us', NVDA:'nvda.us', MSFT:'msft.us', AMZN:'amzn.us', META:'meta.us' };
+
+  async function loadStocks() {
+    stocksLoaded = true;
+    renderStocks(JTND_DATA.stocks, false);
+    setLiveBadge('stocksLiveBadge', false);
+
+    // Try Alpha Vantage first if a key is configured (one symbol at a time, rate-limit aware)
+    if (state.stockApiKey) {
+      const key = deobfuscate(state.stockApiKey);
+      try {
+        let any = false;
+        const merged = [...JTND_DATA.stocks];
+        for (let i = 0; i < merged.length; i++) {
+          const s = merged[i];
+          const res = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${s.sym}&apikey=${encodeURIComponent(key)}`);
+          if (!res.ok) continue;
+          const data = await res.json();
+          const q = data && data['Global Quote'];
+          if (q && q['05. price']) {
+            const price = parseFloat(q['05. price']);
+            const change = parseFloat(q['09. change']);
+            const pct = parseFloat((q['10. change percent'] || '0%').replace('%',''));
+            const vol = q['06. volume'] ? formatLargeNumber(parseFloat(q['06. volume'])) : s.volume;
+            merged[i] = { ...s, price, change, pct, volume: vol };
+            any = true;
+          } else if (data && (data['Note'] || data['Information'])) {
+            // rate limited — stop trying further symbols
+            break;
+          }
+        }
+        if (any) {
+          JTND_DATA.stocks = merged;
+          renderStocks(merged, true);
+          setLiveBadge('stocksLiveBadge', true);
+          renderTicker();
+          return;
+        }
+      } catch (err) {
+        // fall through to Stooq
+      }
+    }
+
+    try {
+      const symbols = Object.values(STOOQ_SYMBOLS).join('+');
+      const res = await fetch(`https://stooq.com/q/l/?s=${symbols}&f=sd2t2ohlcv&h&e=csv`);
+      if (!res.ok) throw new Error('fetch failed');
+      const csv = await res.text();
+      const lines = csv.trim().split('\n');
+      if (lines.length < 2) throw new Error('no data');
+      const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const closeIdx = header.indexOf('close');
+      const openIdx = header.indexOf('open');
+      const volIdx = header.indexOf('volume');
+      const symIdx = header.indexOf('symbol');
+      let any = false;
+      const merged = JTND_DATA.stocks.map(s => {
+        const stooqSym = STOOQ_SYMBOLS[s.sym];
+        const row = lines.slice(1).find(l => l.toLowerCase().startsWith(stooqSym));
+        if (!row) return s;
+        const cols = row.split(',');
+        const close = parseFloat(cols[closeIdx]);
+        const open = parseFloat(cols[openIdx]);
+        if (!close || close === 0 || isNaN(close)) return s;
+        any = true;
+        const change = close - open;
+        const pct = open ? (change / open) * 100 : s.pct;
+        const vol = cols[volIdx] ? formatLargeNumber(parseFloat(cols[volIdx])) : s.volume;
+        return { ...s, price: close, change, pct, volume: vol };
+      });
+      if (any) {
+        JTND_DATA.stocks = merged;
+        renderStocks(merged, true);
+        setLiveBadge('stocksLiveBadge', true);
+        renderTicker();
+      }
+    } catch (err) {
+      // keep offline data
+    }
+  }
+
+  function renderStocks(list, isLive) {
+    list = list || JTND_DATA.stocks;
+    const tbody = document.querySelector('#stocksTable tbody');
+    tbody.innerHTML = list.map(s => {
+      const up = s.pct >= 0;
+      const seed = JTND_DATA.sparkSeeds[s.sym] || [1,2,3,4,5];
+      const isWatched = state.watchlist.some(w => w.type === 'stock' && w.id === s.sym);
+      return `<tr>
+        <td>
+          <div class="asset-name">
+            <div class="asset-icon">${escapeHTML(s.sym.slice(0,2))}</div>
+            <div><strong>${escapeHTML(s.name)}</strong><span class="sym">${escapeHTML(s.sym)}</span></div>
+          </div>
+        </td>
+        <td>$${s.price.toFixed(2)}</td>
+        <td class="${up?'text-up':'text-down'}">${up?'+':''}${s.change.toFixed(2)}</td>
+        <td class="${up?'text-up':'text-down'}">${up?'+':''}${s.pct.toFixed(2)}%</td>
+        <td>${escapeHTML(String(s.volume))}</td>
+        <td>${escapeHTML(s.cap)}</td>
+        <td>${sparkline(seed, up)}</td>
+        <td><button class="watch-btn ${isWatched?'active':''}" data-type="stock" data-id="${s.sym}" data-name="${escapeHTML(s.name)}" data-price="${s.price}" data-pct="${s.pct}" aria-label="${isWatched?'Remove from watchlist':'Add to watchlist'}" title="Watchlist">★</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('stockRangeTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-range]');
+    if (!btn) return;
+    document.querySelectorAll('#stockRangeTabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    stockRange = btn.dataset.range;
+    toast(`Showing ${stockRange} range (offline demo data)`);
+  });
+
+  /* ---------------------------------------------------------
+     CRYPTO — CoinGecko live + offline fallback
+     --------------------------------------------------------- */
+  let cryptoLoaded = false;
+  async function loadCrypto() {
+    cryptoLoaded = true;
+    renderCrypto(JTND_DATA.crypto, false);
+    setLiveBadge('cryptoLiveBadge', false);
+    try {
+      const ids = JTND_DATA.crypto.map(c => c.id).join(',');
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h`);
+      if (!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      if (Array.isArray(data) && data.length) {
+        const merged = JTND_DATA.crypto.map(c => {
+          const live = data.find(d => d.id === c.id);
+          if (!live) return c;
+          return {
+            id: c.id, name: live.name, sym: live.symbol.toUpperCase(),
+            price: live.current_price,
+            pct: live.price_change_percentage_24h ?? c.pct,
+            cap: formatLargeNumber(live.market_cap),
+            vol: formatLargeNumber(live.total_volume),
+            spark: live.sparkline_in_7d ? live.sparkline_in_7d.price.filter((_,i)=>i%6===0).slice(-9) : null,
+          };
+        });
+        state.cryptoLive = merged;
+        renderCrypto(merged, true);
+        setLiveBadge('cryptoLiveBadge', true);
+      }
+    } catch (err) {
+      // keep offline data
+    }
+  }
+
+  function formatLargeNumber(n) {
+    if (n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+    if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    return n.toLocaleString();
+  }
+
+  function renderCrypto(list, isLive) {
+    const tbody = document.querySelector('#cryptoTable tbody');
+    tbody.innerHTML = list.map(c => {
+      const up = c.pct >= 0;
+      const seed = c.spark || JTND_DATA.sparkSeeds[c.sym] || [1,3,2,4,3,5,4,6,5];
+      const isWatched = state.watchlist.some(w => w.type === 'crypto' && w.id === c.sym);
+      const priceStr = c.price < 1 ? c.price.toFixed(4) : c.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+      return `<tr>
+        <td>
+          <div class="asset-name">
+            <div class="asset-icon">${escapeHTML(c.sym.slice(0,2))}</div>
+            <div><strong>${escapeHTML(c.name)}</strong><span class="sym">${escapeHTML(c.sym)}</span></div>
+          </div>
+        </td>
+        <td>$${priceStr}</td>
+        <td class="${up?'text-up':'text-down'}">${up?'+':''}${c.pct.toFixed(2)}%</td>
+        <td>$${escapeHTML(typeof c.cap === 'string' ? c.cap : formatLargeNumber(c.cap))}</td>
+        <td>$${escapeHTML(typeof c.vol === 'string' ? c.vol : formatLargeNumber(c.vol))}</td>
+        <td>${sparkline(seed, up)}</td>
+        <td><button class="watch-btn ${isWatched?'active':''}" data-type="crypto" data-id="${c.sym}" data-name="${escapeHTML(c.name)}" data-price="${c.price}" data-pct="${c.pct}" aria-label="${isWatched?'Remove from watchlist':'Add to watchlist'}" title="Watchlist">★</button></td>
+      </tr>`;
+    }).join('');
+
+    const insightEl = document.getElementById('cryptoInsight');
+    const top = [...list].sort((a,b)=>b.pct-a.pct)[0];
+    const bottom = [...list].sort((a,b)=>a.pct-b.pct)[0];
+    insightEl.textContent = `${isLive ? 'Live data' : 'Offline data'}: ${top.name} leads with a ${top.pct.toFixed(2)}% move over 24h, while ${bottom.name} is the weakest performer at ${bottom.pct.toFixed(2)}%. Overall sentiment appears ${ (list.reduce((s,c)=>s+c.pct,0)/list.length) >= 0 ? 'cautiously positive' : 'risk-off' } across major digital assets.`;
+  }
+
+  document.getElementById('refreshCrypto').addEventListener('click', () => { cryptoLoaded = false; loadCrypto(); toast('Refreshing crypto data…'); });
+
+  /* ---------------------------------------------------------
+     CURRENCY — ExchangeRate API live + offline fallback
+     --------------------------------------------------------- */
+  let currencyLoaded = false;
+  let currencyRates = null; // base USD rates table from API
+  const CURRENCY_LIST = ['USD','GBP','EUR','CAD','AUD','CNY','NGN'];
+
+  async function loadCurrency() {
+    currencyLoaded = true;
+    renderCurrency(JTND_DATA.currency, false);
+    setLiveBadge('currencyLiveBadge', false);
+    populateConverter();
+    try {
+      const res = await fetch('https://open.er-api.com/v6/latest/USD');
+      if (!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      if (data && data.rates && data.rates.NGN) {
+        currencyRates = data.rates;
+        const ngn = data.rates.NGN;
+        const merged = JTND_DATA.currency.map(c => {
+          const rate = data.rates[c.base] ? ngn / data.rates[c.base] : c.rate;
+          return { ...c, rate };
+        });
+        renderCurrency(merged, true);
+        setLiveBadge('currencyLiveBadge', true);
+        populateConverter();
+      }
+    } catch (err) {
+      // keep offline
+    }
+  }
+
+  function renderCurrency(list, isLive) {
+    const tbody = document.querySelector('#currencyTable tbody');
+    tbody.innerHTML = list.map(c => {
+      const dailyUp = c.daily >= 0;
+      const weeklyUp = c.weekly >= 0;
+      const strength = Math.min(100, Math.max(0, 50 + c.weekly * 10));
+      return `<tr>
+        <td><strong>${escapeHTML(c.pair)}</strong></td>
+        <td>${c.rate.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+        <td class="${dailyUp?'text-up':'text-down'}">${dailyUp?'+':''}${c.daily.toFixed(2)}%</td>
+        <td class="${weeklyUp?'text-up':'text-down'}">${weeklyUp?'+':''}${c.weekly.toFixed(2)}%</td>
+        <td><div class="strength-meter"><div style="width:${strength}%"></div></div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function populateConverter() {
+    const from = document.getElementById('convFrom');
+    const to = document.getElementById('convTo');
+    if (from.options.length) return; // already populated
+    CURRENCY_LIST.forEach(code => {
+      from.add(new Option(code, code));
+      to.add(new Option(code, code));
+    });
+    from.value = 'USD';
+    to.value = 'NGN';
+    convertCurrency();
+  }
+
+  function getRateFor(code) {
+    // returns rate vs USD (1 USD = X code)
+    if (currencyRates && currencyRates[code]) return currencyRates[code];
+    if (code === 'USD') return 1;
+    if (code === 'NGN') return JTND_DATA.currency.find(c=>c.base==='USD').rate;
+    const pair = JTND_DATA.currency.find(c => c.base === code);
+    if (pair) {
+      const usdToNgn = JTND_DATA.currency.find(c=>c.base==='USD').rate;
+      return usdToNgn / pair.rate; // 1 USD = X code
+    }
+    return 1;
+  }
+
+  function convertCurrency() {
+    const from = document.getElementById('convFrom').value;
+    const to = document.getElementById('convTo').value;
+    const amount = parseFloat(document.getElementById('convAmount').value) || 0;
+    const fromRate = getRateFor(from);
+    const toRate = getRateFor(to);
+    const usdAmount = amount / fromRate;
+    const result = usdAmount * toRate;
+    document.getElementById('convResult').textContent = `${result.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4})} ${to}`;
+  }
+
+  document.getElementById('convFrom').addEventListener('change', convertCurrency);
+  document.getElementById('convTo').addEventListener('change', convertCurrency);
+  document.getElementById('convAmount').addEventListener('input', convertCurrency);
+  document.getElementById('convSwap').addEventListener('click', () => {
+    const from = document.getElementById('convFrom');
+    const to = document.getElementById('convTo');
+    const tmp = from.value; from.value = to.value; to.value = tmp;
+    convertCurrency();
+  });
+  document.getElementById('refreshCurrency').addEventListener('click', () => { currencyLoaded = false; loadCurrency(); toast('Refreshing currency data…'); });
+
+  /* ---------------------------------------------------------
+     WATCHLIST
+     --------------------------------------------------------- */
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.watch-btn');
+    if (!btn) return;
+    const { type, id, name, price, pct } = btn.dataset;
+    const existingIdx = state.watchlist.findIndex(w => w.type === type && w.id === id);
+    if (existingIdx >= 0) {
+      state.watchlist.splice(existingIdx, 1);
+      btn.classList.remove('active');
+      toast(`${name} removed from watchlist`);
+    } else {
+      state.watchlist.push({ type, id, name, price: parseFloat(price), pct: parseFloat(pct) });
+      btn.classList.add('active');
+      showWatchModal(name, type);
+    }
+    storageSet('watchlist', state.watchlist);
+    if (document.getElementById('route-watchlist').classList.contains('active')) renderWatchlist();
+  });
+
+  function showWatchModal(name, type) {
+    document.getElementById('watchModalBody').innerHTML = `<p>${escapeHTML(name)} (${escapeHTML(type)}) has been added to your watchlist.</p><button class="btn" data-route-link="watchlist" id="goWatchlistBtn" style="width:100%;">View Watchlist</button>`;
+    document.getElementById('watchModalBackdrop').classList.add('open');
+    document.getElementById('goWatchlistBtn').addEventListener('click', closeWatchModal);
+  }
+  function closeWatchModal() { document.getElementById('watchModalBackdrop').classList.remove('open'); }
+  document.getElementById('watchModalClose').addEventListener('click', closeWatchModal);
+  document.getElementById('watchModalBackdrop').addEventListener('click', (e) => { if (e.target.id === 'watchModalBackdrop') closeWatchModal(); });
+
+  function renderWatchlist() {
+    const tbody = document.querySelector('#watchlistTable tbody');
+    const empty = document.getElementById('watchlistEmpty');
+    if (!state.watchlist.length) {
+      tbody.innerHTML = '';
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    tbody.innerHTML = state.watchlist.map(w => {
+      const up = w.pct >= 0;
+      const priceStr = w.type === 'crypto' && w.price < 1 ? w.price.toFixed(4) : w.price.toFixed(2);
+      return `<tr>
+        <td><strong>${escapeHTML(w.name)}</strong> <span class="sym">${escapeHTML(w.id)}</span></td>
+        <td style="text-transform:capitalize;">${escapeHTML(w.type)}</td>
+        <td>${w.type==='currency'?'':'$'}${priceStr}</td>
+        <td class="${up?'text-up':'text-down'}">${up?'+':''}${w.pct.toFixed(2)}%</td>
+        <td><button class="watch-btn active" data-type="${w.type}" data-id="${w.id}" data-name="${escapeHTML(w.name)}" data-price="${w.price}" data-pct="${w.pct}" aria-label="Remove from watchlist">★</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ---------------------------------------------------------
+     BOOKMARKS
+     --------------------------------------------------------- */
+  function renderBookmarks() {
+    const grid = document.getElementById('bookmarksGrid');
+    const empty = document.getElementById('bookmarksEmpty');
+    const items = state.bookmarks.map(findArticle).filter(Boolean);
+    if (!items.length) {
+      grid.innerHTML = '';
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    grid.innerHTML = items.map(a => articleCard(a)).join('');
+  }
+  document.getElementById('clearBookmarks').addEventListener('click', () => {
+    if (!state.bookmarks.length) return;
+    state.bookmarks = [];
+    storageSet('bookmarks', state.bookmarks);
+    renderBookmarks();
+    document.querySelectorAll('.bookmark-btn').forEach(b => { b.classList.remove('bookmarked'); b.textContent='☆'; b.setAttribute('aria-pressed','false'); });
+    toast('All bookmarks cleared');
+  });
+
+  /* ---------------------------------------------------------
+     AI & TECH / BUSINESS — filtered grids
+     --------------------------------------------------------- */
+  function renderAITech(filter) {
+    filter = filter || 'all';
+    const items = JTND_DATA.articles.filter(a => a.category === 'AI & Tech' && (filter === 'all' || a.topic === filter));
+    document.getElementById('aiTechGrid').innerHTML = items.length
+      ? items.map(a => fullAICard(a)).join('')
+      : `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🤖</div><h4>No articles in this category</h4><p>Try another filter.</p></div>`;
+  }
+  document.getElementById('aiTechFilters').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-filter]');
+    if (!btn) return;
+    document.querySelectorAll('#aiTechFilters button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAITech(btn.dataset.filter);
+  });
+
+  function renderBusiness(filter) {
+    filter = filter || 'all';
+    const items = JTND_DATA.articles.filter(a => a.category === 'Business' && (filter === 'all' || a.topic === filter || (filter==='Technology' && a.topic==='Technology') || (filter==='Crypto' && a.category==='Crypto')));
+    const pool = filter === 'all' ? JTND_DATA.articles.filter(a=>a.category==='Business')
+      : JTND_DATA.articles.filter(a => a.topic === filter);
+    document.getElementById('businessGrid').innerHTML = pool.length
+      ? pool.map(a => fullAICard(a)).join('')
+      : `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">💼</div><h4>No articles in this category</h4><p>Try another filter.</p></div>`;
+  }
+  document.getElementById('businessFilters').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-filter]');
+    if (!btn) return;
+    document.querySelectorAll('#businessFilters button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBusiness(btn.dataset.filter);
+  });
+
+  /* ---------------------------------------------------------
+     WORLD MAP
+     --------------------------------------------------------- */
+  let mapInitialized = false;
+  let mapZoom = 1;
+  const TYPE_COLORS = { breaking:'var(--down)', developing:'var(--warn)', positive:'var(--up)', tech:'#5b9bd5', finance:'#a78bfa' };
+
+  function initWorldMap() {
+    mapInitialized = true;
+    const svg = document.getElementById('worldMap');
+    // Simplified world landmasses — stylized but recognizable silhouettes (1000x500 equirectangular-like)
+    const continents = [
+      { name:'North America',
+        d:'M50,70 L160,55 L230,75 L270,60 L290,90 L260,120 L270,150 L230,190 L210,250 L170,260 L150,220 L120,230 L90,190 L100,150 L60,140 L40,110 Z' },
+      { name:'South America',
+        d:'M195,275 L240,270 L270,300 L290,360 L275,420 L245,470 L210,460 L195,400 L175,340 Z' },
+      { name:'Europe',
+        d:'M440,60 L520,50 L560,70 L585,65 L600,90 L575,115 L590,140 L550,160 L500,150 L470,170 L440,140 L450,110 Z' },
+      { name:'Africa',
+        d:'M450,175 L540,165 L580,200 L600,260 L585,330 L555,400 L520,440 L490,420 L470,360 L455,300 L430,240 Z' },
+      { name:'Asia',
+        d:'M600,55 L760,45 L880,70 L940,110 L960,160 L900,180 L860,230 L800,250 L740,230 L700,260 L650,230 L610,180 L590,130 L620,100 Z' },
+      { name:'Oceania',
+        d:'M780,340 L880,330 L930,360 L920,420 L860,440 L800,420 L770,380 Z' },
+      { name:'Greenland',
+        d:'M300,30 L360,25 L380,55 L350,75 L310,65 Z' },
+    ];
+    let html = continents.map(c => `<path class="country" d="${c.d}" tabindex="0" role="img" aria-label="${c.name}"></path>`).join('');
+
+    // pins
+    JTND_DATA.countries.forEach(c => {
+      const color = TYPE_COLORS[c.type] || 'var(--accent)';
+      html += `<g class="news-pin" data-code="${c.code}" tabindex="0" role="button" aria-label="${c.name} — view news">
+        <circle cx="${c.x}" cy="${c.y}" r="9" fill="${color}" opacity="0.25"><animate attributeName="r" values="9;14;9" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle cx="${c.x}" cy="${c.y}" r="5" fill="${color}" stroke="var(--bg)" stroke-width="1.5"></circle>
+        <text x="${c.x}" y="${c.y - 12}" fill="var(--text2)" font-size="10" font-family="Poppins, sans-serif" text-anchor="middle">${c.code}</text>
+      </g>`;
+    });
+    svg.innerHTML = html;
+    svg.style.transition = 'transform 200ms ease';
+
+    svg.querySelectorAll('.news-pin').forEach(pin => {
+      const activate = () => showCountryDetail(pin.dataset.code);
+      pin.addEventListener('click', activate);
+      pin.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } });
+    });
+
+    document.getElementById('mapZoomIn').addEventListener('click', () => setMapZoom(mapZoom + 0.2));
+    document.getElementById('mapZoomOut').addEventListener('click', () => setMapZoom(mapZoom - 0.2));
+    document.getElementById('mapReset').addEventListener('click', () => setMapZoom(1));
+
+    document.getElementById('mapSearch').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) return;
+      const match = JTND_DATA.countries.find(c => c.name.toLowerCase().includes(q));
+      if (match) showCountryDetail(match.code);
+    });
+  }
+
+  function setMapZoom(z) {
+    mapZoom = Math.min(2.5, Math.max(0.6, z));
+    document.getElementById('worldMap').style.transform = `scale(${mapZoom})`;
+    document.getElementById('worldMap').style.transformOrigin = 'center';
+  }
+
+  // Map detail tab state
+  let mapDetailTab = 'news';
+
+  function showCountryDetail(code) {
+    const c = JTND_DATA.countries.find(x => x.code === code);
+    if (!c) return;
+    mapDetailTab = 'news';
+    renderMapDetail(c);
+  }
+
+  function renderMapDetail(c) {
+    const typeLabel = { breaking:'🔴 Breaking', developing:'🟡 Developing', positive:'🟢 Positive', tech:'🔵 Tech', finance:'🟣 Finance' }[c.type] || '';
+
+    // pick top 3 crypto by absolute pct move as "relevant"
+    const cryptoList = (state.cryptoLive || JTND_DATA.crypto);
+    const topCrypto = [...cryptoList].sort((a,b) => Math.abs(b.pct) - Math.abs(a.pct)).slice(0,3);
+
+    // pick top 3 stocks by absolute pct move
+    const topStocks = [...JTND_DATA.stocks].sort((a,b) => Math.abs(b.pct) - Math.abs(a.pct)).slice(0,3);
+
+    const tabContent = {
+      news: `
+        <ul style="padding:0;margin:0;list-style:none;display:flex;flex-direction:column;gap:8px;">
+          ${c.headlines.map(h => `
+            <li style="padding:8px 10px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);line-height:1.45;">
+              ${escapeHTML(h)}
+            </li>`).join('')}
+        </ul>
+        <button id="mapAiSumBtn" style="margin-top:12px;width:100%;background:var(--accent-soft);border:1px solid var(--card-border-strong);border-radius:var(--radius-sm);padding:9px 14px;color:var(--accent);font-size:12px;font-family:var(--font-data);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;" data-mode="news" data-country="${escapeHTML(c.name)}">
+          ✦ AI Summary
+        </button>
+        <div id="mapAiOutput" style="display:none;margin-top:10px;padding:10px 12px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);line-height:1.55;"></div>
+      `,
+      crypto: `
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${topCrypto.map(cr => {
+            const up = cr.pct >= 0;
+            const priceStr = cr.price < 1 ? cr.price.toFixed(4) : cr.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+            return `<div style="padding:10px 12px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="asset-icon" style="width:26px;height:26px;font-size:10px;">${escapeHTML(cr.sym.slice(0,2))}</div>
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:var(--text);">${escapeHTML(cr.name)}</div>
+                  <div style="font-size:11px;color:var(--text3);font-family:var(--font-data);">${escapeHTML(cr.sym)}</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:13px;font-family:var(--font-data);font-weight:700;">$${priceStr}</div>
+                <div style="font-size:11px;font-family:var(--font-data);color:${up?'var(--up)':'var(--down)'};">${up?'▲':'▼'}${Math.abs(cr.pct).toFixed(2)}%</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        <button id="mapAiSumBtn" style="margin-top:12px;width:100%;background:var(--accent-soft);border:1px solid var(--card-border-strong);border-radius:var(--radius-sm);padding:9px 14px;color:var(--accent);font-size:12px;font-family:var(--font-data);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;" data-mode="crypto" data-country="${escapeHTML(c.name)}">
+          ✦ AI Crypto Insight
+        </button>
+        <div id="mapAiOutput" style="display:none;margin-top:10px;padding:10px 12px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);line-height:1.55;"></div>
+      `,
+      stocks: `
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${topStocks.map(s => {
+            const up = s.pct >= 0;
+            return `<div style="padding:10px 12px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="asset-icon" style="width:26px;height:26px;font-size:10px;">${escapeHTML(s.sym.slice(0,2))}</div>
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:var(--text);">${escapeHTML(s.name)}</div>
+                  <div style="font-size:11px;color:var(--text3);font-family:var(--font-data);">${escapeHTML(s.sym)} · Vol ${escapeHTML(String(s.volume))}</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:13px;font-family:var(--font-data);font-weight:700;">$${s.price.toFixed(2)}</div>
+                <div style="font-size:11px;font-family:var(--font-data);color:${up?'var(--up)':'var(--down)'};">${up?'▲':'▼'}${Math.abs(s.pct).toFixed(2)}%</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        <button id="mapAiSumBtn" style="margin-top:12px;width:100%;background:var(--accent-soft);border:1px solid var(--card-border-strong);border-radius:var(--radius-sm);padding:9px 14px;color:var(--accent);font-size:12px;font-family:var(--font-data);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;" data-mode="stocks" data-country="${escapeHTML(c.name)}">
+          ✦ AI Market Insight
+        </button>
+        <div id="mapAiOutput" style="display:none;margin-top:10px;padding:10px 12px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);line-height:1.55;"></div>
+      `,
+    };
+
+    document.getElementById('mapDetailCard').innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <span class="eyebrow">Region Detail</span>
+        <span style="font-size:11px;color:var(--text3);font-family:var(--font-data);">${typeLabel}</span>
+      </div>
+      <h2 style="font-size:18px;margin:0 0 10px;font-family:var(--font-display);">${escapeHTML(c.name)}</h2>
+      <div style="display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--card-border);padding-bottom:10px;">
+        ${['news','crypto','stocks'].map(tab => `
+          <button class="map-tab-btn" data-tab="${tab}" data-code="${escapeHTML(c.code)}" style="
+            flex:1;padding:6px 4px;font-size:10.5px;font-family:var(--font-data);font-weight:700;letter-spacing:0.07em;
+            text-transform:uppercase;border-radius:var(--radius-sm);border:1px solid var(--card-border);
+            background:${mapDetailTab===tab?'var(--accent)':'var(--card)'};
+            color:${mapDetailTab===tab?'var(--accent-text)':'var(--text3)'};
+            cursor:pointer;transition:all 180ms;">
+            ${tab === 'news' ? '📰 News' : tab === 'crypto' ? '₿ Crypto' : '📈 Stocks'}
+          </button>`).join('')}
+      </div>
+      <div id="mapDetailTabContent">${tabContent[mapDetailTab]}</div>
+    `;
+
+    // Tab switching
+    document.querySelectorAll('.map-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        mapDetailTab = btn.dataset.tab;
+        renderMapDetail(c);
+      });
+    });
+
+    // AI Summary button
+    const aiBtn = document.getElementById('mapAiSumBtn');
+    if (aiBtn) {
+      aiBtn.addEventListener('click', () => {
+        const mode = aiBtn.dataset.mode;
+        const country = aiBtn.dataset.country;
+        const out = document.getElementById('mapAiOutput');
+        aiBtn.textContent = '✦ Generating…';
+        aiBtn.disabled = true;
+        setTimeout(() => {
+          out.style.display = 'block';
+          out.textContent = mapAiSummary(mode, country, topCrypto, topStocks, c);
+          aiBtn.textContent = mode === 'news' ? '✦ AI Summary' : mode === 'crypto' ? '✦ AI Crypto Insight' : '✦ AI Market Insight';
+          aiBtn.disabled = false;
+        }, 420);
+      });
+    }
+  }
+
+  function mapAiSummary(mode, country, topCrypto, topStocks, countryData) {
+    if (mode === 'news') {
+      const headlines = countryData.headlines;
+      const typeDesc = { breaking:'breaking developments', developing:'developing stories', positive:'positive developments', tech:'technology advances', finance:'financial activity' }[countryData.type] || 'news activity';
+      return `📍 ${country} — ${typeDesc.charAt(0).toUpperCase()+typeDesc.slice(1)} detected. Key themes: ${headlines.slice(0,2).join('; ')}. Regional outlook: ${countryData.type === 'positive' || countryData.type === 'finance' ? 'conditions appear constructive with continued monitoring advised.' : 'situation is evolving — watch for follow-through in global markets.'}`;
+    }
+    if (mode === 'crypto') {
+      const top = topCrypto[0];
+      const bottom = [...topCrypto].sort((a,b) => a.pct - b.pct)[0];
+      const avgPct = topCrypto.reduce((s,c)=>s+c.pct,0)/topCrypto.length;
+      return `₿ Crypto snapshot: ${top.name} leads with ${top.pct >= 0 ? '+' : ''}${top.pct.toFixed(2)}% (24h), while ${bottom.name} lags at ${bottom.pct.toFixed(2)}%. Overall market sentiment is ${avgPct >= 0 ? 'mildly bullish' : 'risk-off'} — monitor ${country}-linked institutional flows for directional cues. Bitcoin at $${top.name==='Bitcoin'? top.price.toLocaleString(undefined,{maximumFractionDigits:0}) : topCrypto.find(c=>c.name==='Bitcoin')?.price.toLocaleString(undefined,{maximumFractionDigits:0}) || 'N/A'} remains the key risk barometer.`;
+    }
+    if (mode === 'stocks') {
+      const mover = topStocks[0];
+      const avgPct = topStocks.reduce((s,st)=>s+st.pct,0)/topStocks.length;
+      return `📈 Equity snapshot: ${mover.name} (${mover.sym}) is the biggest mover at ${mover.pct >= 0 ? '+' : ''}${mover.pct.toFixed(2)}%. Broader equities are ${avgPct >= 0 ? 'trending positive' : 'under pressure'} on average. ${country}-related trade and capital flow news may amplify moves in tech and commodity-sensitive names. Consider sector rotation signals before taking positions.`;
+    }
+    return '';
+  }
+
+  /* ---------------------------------------------------------
+     SETTINGS PANEL HANDLERS
+     --------------------------------------------------------- */
+  document.getElementById('themeTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-theme-opt]');
+    if (btn) setTheme(btn.dataset.themeOpt);
+  });
+  document.getElementById('accentSwatches').addEventListener('click', (e) => {
+    const btn = e.target.closest('.swatch');
+    if (btn) setAccent(btn.dataset.accent);
+  });
+  document.getElementById('layoutTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-layout-opt]');
+    if (btn) setLayout(btn.dataset.layoutOpt);
+  });
+  document.getElementById('fontTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-font-opt]');
+    if (btn) setFont(btn.dataset.fontOpt);
+  });
+  document.getElementById('topicTags').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-topic]');
+    if (!btn) return;
+    btn.classList.toggle('active');
+    state.topics = Array.from(document.querySelectorAll('#topicTags button.active')).map(b => b.dataset.topic);
+    storageSet('topics', state.topics);
+    toast('Preferences updated', 'success');
+  });
+  document.getElementById('showApiBannerBtn').addEventListener('click', () => {
+    document.getElementById('apiSetupBanner').classList.remove('gone');
+    storageSet('apiBannerDismissed', false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast('API setup banner restored');
+  });
+  document.getElementById('resetSettingsBtn').addEventListener('click', () => {
+    setTheme('dark'); setAccent('bronze'); setLayout('standard'); setFont('inter');
+    state.topics = ['Technology','Finance','AI','Global'];
+    storageSet('topics', state.topics);
+    document.querySelectorAll('#topicTags button').forEach(b => b.classList.toggle('active', state.topics.includes(b.dataset.topic)));
+    toast('Settings reset to defaults', 'success');
+  });
+
+  // initialize topic toggle states from storage
+  function syncTopicTags() {
+    document.querySelectorAll('#topicTags button').forEach(b => b.classList.toggle('active', state.topics.includes(b.dataset.topic)));
+  }
+
+  /* ---------------------------------------------------------
+     LOGIN / AUTH (local-only simulation)
+     --------------------------------------------------------- */
+  function renderAuth() {
+    const out = document.getElementById('loggedOutView');
+    const inView = document.getElementById('loggedInView');
+    if (state.user) {
+      out.hidden = true; inView.hidden = false;
+      document.getElementById('loggedInEmail').textContent = state.user.email;
+      document.getElementById('readingHistoryList').innerHTML = (state.user.history || []).slice(-8).reverse()
+        .map(h => `<li>${escapeHTML(h)}</li>`).join('') || '<li>No articles read yet.</li>';
+    } else {
+      out.hidden = false; inView.hidden = true;
+    }
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) return;
+    state.user = { email, provider:'email', history: state.user ? state.user.history : [] };
+    storageSet('user', state.user);
+    toast(`Welcome, ${email}`, 'success');
+    renderAuth();
+  });
+  document.getElementById('googleLogin').addEventListener('click', () => {
+    state.user = { email:'you@gmail.com', provider:'google', history: [] };
+    storageSet('user', state.user);
+    toast('Signed in with Google (demo)', 'success');
+    renderAuth();
+  });
+  document.getElementById('githubLogin').addEventListener('click', () => {
+    state.user = { email:'you@github.com', provider:'github', history: [] };
+    storageSet('user', state.user);
+    toast('Signed in with GitHub (demo)', 'success');
+    renderAuth();
+  });
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    state.user = null;
+    storageRemove('user');
+    toast('Signed out');
+    renderAuth();
+  });
+
+  // (reading history is now recorded when an article modal is opened — see openArticleModal)
+
+
+  /* ---------------------------------------------------------
+     LIVE TICKER TAPE
+     --------------------------------------------------------- */
+  function renderTicker() {
+    const items = [
+      ...JTND_DATA.indexes.map(i => ({ sym:i.sym, val:i.value.toLocaleString(undefined,{maximumFractionDigits:2}), pct:i.pct })),
+      ...JTND_DATA.stocks.map(s => ({ sym:s.sym, val:'$'+s.price.toFixed(2), pct:s.pct })),
+      ...(state.cryptoLive || JTND_DATA.crypto).map(c => ({ sym:c.sym, val:'$'+(c.price<1?c.price.toFixed(4):c.price.toFixed(2)), pct:c.pct })),
+    ];
+    const html = items.map(i => {
+      const up = i.pct >= 0;
+      return `<span class="ticker-item"><span class="sym">${escapeHTML(i.sym)}</span> ${escapeHTML(i.val)} <span class="chg ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(i.pct).toFixed(2)}%</span></span>`;
+    }).join('');
+    document.getElementById('tickerTrack').innerHTML = html + html; // duplicate for seamless loop
+  }
+
+  /* ---------------------------------------------------------
+     GLOBAL SEARCH
+     --------------------------------------------------------- */
+  function buildSearchIndex() {
+    const idx = [];
+    JTND_DATA.articles.forEach(a => idx.push({ type:'Article', label:a.title, sub:a.category, action:() => { navigateToArticle(a); } }));
+    JTND_DATA.stocks.forEach(s => idx.push({ type:'Stock', label:`${s.name} (${s.sym})`, sub:'Stocks', action:() => navigate('stocks') }));
+    JTND_DATA.crypto.forEach(c => idx.push({ type:'Crypto', label:`${c.name} (${c.sym})`, sub:'Crypto', action:() => navigate('crypto') }));
+    JTND_DATA.currency.forEach(c => idx.push({ type:'Currency', label:c.pair, sub:'Currency', action:() => navigate('currency') }));
+    JTND_DATA.countries.forEach(c => idx.push({ type:'Country', label:c.name, sub:'World Map', action:() => { navigate('worldmap'); setTimeout(()=>showCountryDetail(c.code), 350); } }));
+    ['Home','Breaking News','Markets','Stocks','Crypto','Currency','AI & Tech','Business','World Map','Watchlist','Bookmarks','Settings','Login'].forEach(label => {
+      idx.push({ type:'Page', label, sub:'Navigation', action:() => navigate(label.toLowerCase().replace(/ & | /g,'-').replace('news','news').replace('aitech','ai-tech')) });
+    });
+    return idx;
+  }
+  let searchIndex = null;
+
+  function navigateToArticle(a) {
+    const routeMap = { 'AI & Tech':'ai-tech', 'Business':'business', 'Crypto':'crypto' };
+    navigate(routeMap[a.category] || 'breaking');
+    setTimeout(() => {
+      const el = document.querySelector(`[data-article-id="${a.id}"]`);
+      if (el) { el.scrollIntoView({ behavior:'smooth', block:'center' }); el.style.outline = '2px solid var(--accent)'; setTimeout(()=>el.style.outline='', 1500); }
+    }, 350);
+  }
+
+  function openSearch() {
+    if (!searchIndex) searchIndex = buildSearchIndex();
+    document.getElementById('searchOverlay').classList.add('open');
+    document.getElementById('globalSearch').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('globalSearch').focus();
+  }
+  function closeSearch() { document.getElementById('searchOverlay').classList.remove('open'); }
+
+  document.getElementById('searchBtn').addEventListener('click', openSearch);
+  document.getElementById('searchOverlay').addEventListener('click', (e) => { if (e.target.id === 'searchOverlay') closeSearch(); });
+  document.getElementById('globalSearch').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    const results = document.getElementById('searchResults');
+    if (!q) { results.innerHTML = ''; return; }
+    const matches = searchIndex.filter(i => i.label.toLowerCase().includes(q)).slice(0, 12);
+    results.innerHTML = matches.length
+      ? matches.map((m, i) => `<div class="search-result" data-idx="${i}"><span>${escapeHTML(m.label)}</span><span class="tag">${escapeHTML(m.sub)}</span></div>`).join('')
+      : `<div class="search-result"><span class="muted">No results found</span></div>`;
+    results.dataset.matches = JSON.stringify([]); // placeholder
+    results.querySelectorAll('.search-result[data-idx]').forEach((el, i) => {
+      el.addEventListener('click', () => { matches[i].action(); closeSearch(); });
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); openSearch();
+    } else if (e.key === 'Escape') {
+      closeSearch();
+      document.getElementById('aiPanel').classList.remove('open');
+      closeWatchModal();
+      closeArticleModal();
+    }
+  });
+
+  /* ---------------------------------------------------------
+     AI ASSISTANT (rule-based local simulation)
+     --------------------------------------------------------- */
+  function aiPushMessage(text, who, skipSave) {
+    const wrap = document.getElementById('aiMessages');
+    const el = document.createElement('div');
+    el.className = 'ai-msg ' + (who === 'user' ? 'user' : 'bot');
+    el.textContent = text;
+    wrap.appendChild(el);
+    wrap.scrollTop = wrap.scrollHeight;
+    if (!skipSave) {
+      state.aiLog.push({ text, who });
+      if (state.aiLog.length > 60) state.aiLog = state.aiLog.slice(-60);
+      storageSet('aiLog', state.aiLog);
+    }
+  }
+
+  function restoreAiLog() {
+    if (state.aiLog && state.aiLog.length) {
+      state.aiLog.forEach(m => aiPushMessage(m.text, m.who, true));
+    } else {
+      aiPushMessage("Hi, I'm the JTND Assistant. Ask me to summarize news, explain a financial concept, analyze markets, or customize the site.", 'bot');
+    }
+  }
+
+  function aiRespond(query) {
+    const q = query.toLowerCase();
+    let response;
+
+    if (q.includes('summarize') && (q.includes('news') || q.includes('today'))) {
+      const top = JTND_DATA.articles.slice(0,3).map(a => `• ${a.title}`).join('\n');
+      response = `Here's a quick rundown of today's top stories:\n${top}\n\nWant the full AI breakdown of any of these? Visit Breaking News.`;
+    } else if (q.includes('p/e') || q.includes('price to earnings') || q.includes('price-to-earnings')) {
+      response = "The P/E ratio (Price-to-Earnings) compares a company's share price to its earnings per share. A high P/E can suggest investors expect strong future growth, while a low P/E may indicate undervaluation or concerns about future performance. It's most useful when compared against industry peers.";
+    } else if (q.includes('bitcoin') || q.includes('btc')) {
+      const btc = (state.cryptoLive || JTND_DATA.crypto).find(c => c.id === 'bitcoin' || c.sym === 'BTC');
+      response = btc
+        ? `Bitcoin is currently trading around $${btc.price.toLocaleString(undefined,{maximumFractionDigits:2})}, ${btc.pct >= 0 ? 'up' : 'down'} ${Math.abs(btc.pct).toFixed(2)}% over the last 24 hours. ${btc.pct >= 0 ? "Momentum looks constructive, but always confirm with broader market context." : "Some short-term weakness — worth watching support levels."}`
+        : "I don't have live Bitcoin data right now — check the Crypto Center for the latest prices.";
+    } else if (q.includes('dark mode') || q.includes('dark theme')) {
+      setTheme('dark'); response = "Switched JTND to dark mode for you.";
+    } else if (q.includes('light mode') || q.includes('light theme')) {
+      setTheme('light'); response = "Switched JTND to light mode for you.";
+    } else if (q.includes('crypto') && (q.includes('trend') || q.includes('insight'))) {
+      const list = state.cryptoLive || JTND_DATA.crypto;
+      const top = [...list].sort((a,b)=>b.pct-a.pct)[0];
+      response = `${top.name} (${top.sym}) is the strongest performer right now at ${top.pct >= 0 ? '+' : ''}${top.pct.toFixed(2)}% over 24h. Overall crypto sentiment looks ${list.reduce((s,c)=>s+c.pct,0)/list.length >= 0 ? 'mildly bullish' : 'mixed to bearish'}.`;
+    } else if (q.includes('stock') && (q.includes('explain') || q.includes('what is'))) {
+      response = "A stock represents a share of ownership in a company. When you buy shares, you become a partial owner and may benefit from price appreciation and dividends, but you also share in the company's risk.";
+    } else if (q.includes('navigate') || q.includes('where') || q.includes('how do i')) {
+      response = "You can use the top navigation bar to reach Markets, Stocks, Crypto, Currency, AI & Tech, Business, the World Map, your Watchlist and Bookmarks. Press '/' anytime to search the whole site.";
+    } else if (q.includes('customize') || q.includes('theme') || q.includes('accent') || q.includes('font')) {
+      response = "Head to Settings to change the theme, accent color, layout density, font, and your preferred news topics — everything is saved on this device.";
+    } else if (q.includes('hello') || q.includes('hi') || q.includes('hey')) {
+      response = "Hello! I'm the JTND assistant. I can summarize news, explain financial concepts, analyze markets, or help you customize the site. What would you like to know?";
+    } else {
+      response = "I can help summarize news, explain financial terms, analyze market and crypto trends, or customize JTND's appearance. Try asking something like \"How is Bitcoin trending?\" or \"Explain market cap.\"";
+    }
+    return response;
+  }
+
+  document.getElementById('aiFab').addEventListener('click', () => {
+    const panel = document.getElementById('aiPanel');
+    const open = panel.classList.toggle('open');
+    document.getElementById('aiFab').setAttribute('aria-expanded', String(open));
+    if (open && !document.getElementById('aiMessages').children.length) {
+      restoreAiLog();
+    }
+  });
+  document.getElementById('aiCloseBtn').addEventListener('click', () => {
+    document.getElementById('aiPanel').classList.remove('open');
+    document.getElementById('aiFab').setAttribute('aria-expanded', 'false');
+  });
+  document.getElementById('aiClearBtn').addEventListener('click', () => {
+    state.aiLog = [];
+    storageSet('aiLog', state.aiLog);
+    document.getElementById('aiMessages').innerHTML = '';
+    aiPushMessage("Conversation cleared. How can I help?", 'bot', true);
+    toast('AI conversation cleared');
+  });
+  function aiSend() {
+    const input = document.getElementById('aiInput');
+    const val = input.value.trim();
+    if (!val) return;
+    aiPushMessage(val, 'user');
+    input.value = '';
+    setTimeout(() => aiPushMessage(aiRespond(val), 'bot'), 380);
+  }
+  document.getElementById('aiSendBtn').addEventListener('click', aiSend);
+  document.getElementById('aiInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') aiSend(); });
+  document.querySelectorAll('.ai-suggestions button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('aiInput').value = btn.dataset.prompt;
+      aiSend();
+    });
+  });
+
+  /* ---------------------------------------------------------
+     INIT
+     --------------------------------------------------------- */
+  function init() {
+    applyTheme();
+    syncTopicTags();
+    renderHome();
+    renderBreaking();
+    renderMarkets();
+    renderStocks();
+    renderWatchlist();
+    renderBookmarks();
+    renderAITech('all');
+    renderBusiness('all');
+    renderAuth();
+    renderTicker();
+    refreshApiStatusUI();
+    refreshStockApiStatusUI();
+    setLiveBadge('marketsLiveBadge', false);
+
+    const initialRoute = location.hash.replace('#','') || 'home';
+    navigate(initialRoute);
+
+    // Manual refresh news button
+    document.getElementById('manualRefreshNews').addEventListener('click', () => {
+      if (state.newsApiKey) { fetchLiveNews(); toast('Fetching latest headlines…'); }
+      else { toast('Connect a NewsData.io key first'); navigate('settings'); }
+    });
+
+    // If API key already saved, start live news immediately
+    if (state.newsApiKey) {
+      fetchLiveNews();
+      startNewsAutoRefresh();
+    }
+
+    /* ---- 0.5s LIVE PRICE PULSE ----
+       Simulates real-time tick fluctuations for stocks, crypto, indexes.
+       When live APIs are connected their data is the base; jitter adds
+       realistic micro-moves on top. Currency refreshes less aggressively (every 5s).
+    */
+    let pulseTick = 0;
+    const liveInterval = setInterval(() => {
+      pulseTick++;
+
+      // Indexes — small random walk
+      JTND_DATA.indexes.forEach(i => {
+        const move = (Math.random() - 0.5) * 1.2;
+        i.value = Math.max(0.01, i.value + move);
+        i.change += (Math.random() - 0.5) * 0.3;
+        i.pct = (i.change / i.value) * 100;
+      });
+
+      // Stocks — jitter unless live Alpha Vantage is connected (then just small noise)
+      const stocksLive = document.querySelector('#stocksLiveBadge .status-pill.connected') !== null;
+      JTND_DATA.stocks.forEach(s => {
+        const volatility = stocksLive ? 0.04 : 0.35;
+        const move = (Math.random() - 0.5) * volatility;
+        s.price = Math.max(0.01, s.price + move);
+        s.change += (Math.random() - 0.5) * (volatility * 0.3);
+        s.pct = (s.change / s.price) * 100;
+      });
+
+      // Crypto — higher volatility
+      const cryptoList = state.cryptoLive || JTND_DATA.crypto;
+      cryptoList.forEach(c => {
+        const volatility = c.price > 100 ? c.price * 0.0003 : c.price > 1 ? 0.08 : 0.0002;
+        const move = (Math.random() - 0.5) * volatility * 2;
+        c.price = Math.max(0.0001, c.price + move);
+        c.pct += (Math.random() - 0.5) * 0.04;
+      });
+      if (state.cryptoLive) {
+        // also sync JTND_DATA.crypto prices
+        JTND_DATA.crypto.forEach((c, i) => {
+          if (state.cryptoLive[i]) { c.price = state.cryptoLive[i].price; c.pct = state.cryptoLive[i].pct; }
+        });
+      }
+
+      // Currency — slower, every 5s (10 ticks)
+      if (pulseTick % 10 === 0) {
+        JTND_DATA.currency.forEach(c => {
+          const move = (Math.random() - 0.5) * 0.8;
+          c.rate = Math.max(0.01, c.rate + move);
+          c.daily += (Math.random() - 0.5) * 0.05;
+          c.weekly += (Math.random() - 0.5) * 0.02;
+        });
+      }
+
+      // Always re-render ticker (fast, lightweight)
+      renderTicker();
+
+      // Re-render active financial sections
+      const activeSection = document.querySelector('.section.active');
+      const activeId = activeSection ? activeSection.id : '';
+      if (activeId === 'route-markets') renderMarkets();
+      if (activeId === 'route-stocks') renderStocks(JTND_DATA.stocks, stocksLive);
+      if (activeId === 'route-crypto') renderCrypto(cryptoList, state.cryptoLive !== null);
+      if (activeId === 'route-currency' && pulseTick % 10 === 0) renderCurrency(JTND_DATA.currency, false);
+      if (activeId === 'route-home') renderHome();
+      if (activeId === 'route-watchlist') renderWatchlist();
+
+    }, 500);
+
+    window.addEventListener('beforeunload', () => {
+      clearInterval(liveInterval);
+      if (newsState.refreshTimer) clearInterval(newsState.refreshTimer);
+      if (newsState.countdownTimer) clearInterval(newsState.countdownTimer);
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+
+})();
+
+</script>
+</body>
+</html>
